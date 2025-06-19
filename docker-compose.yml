@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: ujbm-postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${LOCAL_POSTGRESQL_DB}
+      POSTGRES_USER: ${LOCAL_POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${LOCAL_POSTGRESQL_PASS}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:8.0
+    container_name: ujbm-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  pgadmin:
+    image: dpage/pgadmin4:8.6
+    container_name: ujbm-pgadmin
+    env_file:
+      - .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_USER}
+      PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_PASS}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  frontend:
+    build:
+      context: ./ujbm-front
+      dockerfile: Dockerfile
+    container_name: ujbm-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./ujbm-back
+      dockerfile: Dockerfile
+    container_name: ujbm-backend
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
