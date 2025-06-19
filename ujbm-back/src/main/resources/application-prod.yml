@@ -42,12 +42,12 @@ app:
     refresh-token:
       expiration-days: 15
   frontend:
-    base-url: http://localhost:5051
+    base-url: http://localhost:4200
 
 cors:
   allowed-origins:
     - http://frontend
-    - http://localhost:5051
+    - http://localhost:4200
 
 apisnet:
   token: ${APIS_NET_TOKEN}
