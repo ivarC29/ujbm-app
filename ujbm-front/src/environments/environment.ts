@@ -7,7 +7,7 @@ export const environment = {
   // ApiKeys
 
   // URL's
-  backendUrl: 'http://backend:8080',
+  backendUrl: 'http://200.48.100.82:8080',
   apiPrefix: '/api'  
 
 }; 
