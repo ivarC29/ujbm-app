@@ -1,0 +1,103 @@
+:host ::ng-deep {
+    .p-password {
+      display: block;
+      width: 100%;
+      
+      input {
+        width: 100%;
+      }
+
+    }
+  }
+
+.login-page {
+  display: flex;
+  min-height: 100vh;
+
+  .login-image {
+    background-image: url('https://bausate.edu.pe/wp-content/uploads/2023/08/Pano-fachadaret.jpg');
+    background-size: cover;
+    background-position: right;
+  }
+
+  .support-links {
+    margin-top: 1.5rem;
+
+    a {
+      color: var(--primary-color);
+      font-weight: 500;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .secure-connection {
+    margin-top: 1rem;
+    p {
+      font-size: 0.75rem;
+      color: var(--text-color-secondary);
+    }
+  }
+
+  .p-password {
+    display: block;
+    width: 100%;
+
+    input {
+      width: 100%;
+    }
+  }
+
+  .bienvenido-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    letter-spacing: -1px;
+    
+   
+    :host-context(.dark-theme) & {
+      color: white;
+    }
+  }
+
+  .bienvenido-subtitle {
+    font-size: 1.05rem;
+    color: #6b7280;
+    margin-bottom: 0;
+    
+    
+    :host-context(.dark) & {
+      color: #d1d5db;
+    }
+  }
+
+  button.login-button {
+    background-color: var(--primary-color);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.85rem 0;
+    margin-top: 1.5rem;
+    box-shadow: 0 2px 8px 0 rgba(60, 60, 60, 0.04);
+    transition: background-color 0.2s, box-shadow 0.2s;
+
+    &:hover,
+    &:focus {
+      background-color: #274482; 
+      color: #fff;
+      box-shadow: 0 4px 16px 0 rgba(60, 60, 60, 0.08);
+    }
+
+    &:disabled {
+      background-color: var(--primary-light);
+      color: var(--text-color-secondary);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+
+}

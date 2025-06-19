@@ -1,0 +1,107 @@
+<app-floating-configurator />
+<div class="login-page min-h-screen flex">
+  <!-- Left Side (Image) -->
+  <div class="hidden lg:flex w-1/2 bg-cover bg-center login-image">
+    <!-- Imagen de fondo ajustada con CSS -->
+  </div>
+
+  <!-- Right Side (Form) -->
+  <div class="flex flex-col justify-center items-center w-full lg:w-1/2 p-8">
+    <div class="w-full max-w-md">
+      <!-- Logo -->
+      <div class="text-center mb-8">
+        <img
+          src="https://bausate.edu.pe/wp-content/uploads/2021/10/LOGO-UB-EN-PNG.png"
+          alt="Universidad Jaime Bausate y Meza"
+          class="w-auto mx-auto mb-4"
+        />
+        <h1 class="bienvenido-title">
+          ¡Bienvenido!
+        </h1>
+        <p class="bienvenido-subtitle">
+          Inicia sesión para continuar
+        </p>
+      </div>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        
+        <app-text-input
+          controlName="username"
+          [form]="loginForm"
+          label="Usuario"
+          placeholder="Ingresa tu código"
+          class="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+        ></app-text-input>
+
+        <div>
+          <label
+            for="password"
+            class="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+          >
+            Contraseña
+          </label>
+          <p-password
+            id="password"
+            formControlName="password"
+            placeholder="Ingresa tu contraseña"
+            [toggleMask]="true"
+            styleClass="w-full"
+            [feedback]="false"
+            [ngClass]="{ 'p-invalid': submitted && f['password'].errors }"
+          ></p-password>
+          @if (submitted && f['password'].errors) {
+            <small class="p-error">La contraseña es requerida</small>
+          }
+        </div>
+
+        <!-- Remember Me and Forgot Password -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <p-checkbox
+              formControlName="rememberMe"
+              id="rememberme1"
+              binary
+              class="mr-2"
+            ></p-checkbox>
+            <label for="rememberme1" class="text-gray-700 dark:text-gray-300">
+              Recuérdame
+            </label>
+          </div>
+          <a
+            href="https://bausate.edu.pe/contacto/"
+            class="text-primary font-medium hover:underline"
+          >
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          pButton
+          type="submit"
+          label="Iniciar Sesión"
+          icon="pi pi-sign-in"
+          [loading]="loading"
+          [disabled]="loading || loginForm.invalid"
+          class="w-full bg-primary login-button hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition duration-200"
+        ></button>
+      </form>
+
+      <!-- Support and Help -->
+      <div class="text-center mt-6 support-links">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          ¿Necesitas ayuda? <a href="https://bausate.edu.pe/contacto/" class="text-primary hover:underline">Contáctanos</a>
+        </p>
+      </div>
+
+      <!-- Secure Connection Message -->
+      <div class="text-center mt-4 secure-connection">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          Este sitio está protegido. Tu información está segura.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<p-toast></p-toast>

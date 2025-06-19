@@ -1,0 +1,14 @@
+<div class="courses-list">
+  <div *ngFor="let course of courses" class="course-card">
+    <div class="course-main">
+      <div class="course-title">{{ course.courseName }}</div>
+      <div class="course-meta">
+        <span><strong>Código:</strong> {{ course.courseCode }}</span>
+        <span><strong>Sección:</strong> {{ course.section }}</span>
+        <span><strong>Créditos:</strong> {{ course.credits }}</span>
+        <span><strong>Estado:</strong> {{ course.status }}</span>
+      </div>
+    </div>
+    <button class="ver-horario-btn" (click)="verHorario.emit(course.courseSectionId)">Ver horario</button>
+  </div>
+</div>

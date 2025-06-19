@@ -1,0 +1,128 @@
+      <app-configurator></app-configurator>
+    <app-page-header
+      title="Formulario de Postulación"
+      subtitle="Complete los datos para iniciar su proceso de admisión"
+      logoPath="logo.png"
+      logoAlt="Universidad Jaime Bausate y Meza"
+      [showDarkModeToggle]="true"
+    ></app-page-header>
+<div class="registry-container bg-surface-ground">
+  <div class="mx-auto">
+    <div class="card surface-card shadow-lg rounded-lg p-0 overflow-hidden">
+      <div class="flex flex-col md:flex-row md:flex-wrap items-start md:items-center justify-between gap-3 px-4 py-3 border-b-1 surface-border bg-surface-section">
+        <!-- Enrollment- Desktop -->
+        <div class="hidden md:flex items-center gap-2  min-w-[300px] max-w-[600px]">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-list text-primary-500"></i>
+            <span class="text-sm font-medium">Modalidad:</span>
+          </div>
+          <app-select-button
+            [form]="formGroup"
+            controlName="selectedMode"
+            [options]="enrollmentModes()"
+            optionLabel="label"
+            optionValue="code"
+            class="enrollment-select-button"
+          ></app-select-button>
+          <app-tooltip-help
+            [text]="selectedDescription()"
+            position="right"
+            class="flex-shrink-0"
+          ></app-tooltip-help>
+        </div>
+
+        <!-- Enrollment - Mobile -->
+        <div class="w-full md:hidden flex flex-col gap-2 mb-3">
+          <label for="mobileEnrollmentMode" class="text-sm font-medium text-color-secondary">Modalidad de Postulación:</label>
+          <app-select-input
+            inputId="mobileEnrollmentMode"
+            [form]="formGroup"
+            controlName="selectedMode"
+            [options]="enrollmentModes()"
+            optionLabel="label"
+            optionValue="code"
+            placeholder="Selecciona una modalidad"
+            class="w-full"
+          ></app-select-input>
+           <p class="text-xs text-color-secondary mt-1 px-1">
+            {{ selectedDescription() }}
+          </p>
+        </div>
+
+        <!-- Action Buttons - Desktop -->
+        <div class="hidden md:flex gap-2">
+          <button
+            pButton
+            type="button"
+            class="p-button-sm p-button-primary"
+            [disabled]="formGroup.invalid"
+            (click)="onSubmit()"
+            icon="pi pi-send"
+            label="Registrar"
+          ></button>
+          <button
+            pButton
+            type="button"
+            class="p-button-sm p-button-outlined"
+            (click)="onClear()"
+            icon="pi pi-eraser"
+            label="Limpiar"
+          ></button>
+          <button
+            pButton
+            type="button"
+            class="p-button-sm p-button-outlined p-button-secondary"
+            (click)="onCancel()"
+            icon="pi pi-times"
+            label="Cancelar"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <form [formGroup]="formGroup" class="p-3 md:px-5">
+        <app-applicant-form
+          [form]="formGroup"
+          [selectedMode]="selectedMode()"
+          [showGuardianForm]="showGuardianForm"
+        ></app-applicant-form>
+      </form>
+    </div>
+  </div>
+</div>
+
+      <div class="md:hidden p-3 border-t-1 surface-border"> 
+        <div class="flex flex-col sm:flex-row gap-3 sm:justify-start"> 
+          <button
+            pButton
+            type="button"
+            class="p-button-primary w-full sm:w-auto"
+            [disabled]="formGroup.invalid || saving"
+            (click)="onSubmit()"
+            [loading]="saving"
+            icon="pi pi-send"
+            label="Registrar"
+          ></button>
+          <div class="flex gap-2">
+            <button
+              pButton
+              type="button"
+              class="p-button-outlined flex-1" 
+              (click)="onClear()"
+              icon="pi pi-eraser"
+              tooltip="Limpiar Formulario"
+              tooltipPosition="top"
+            ></button>
+            <button
+              pButton
+              type="button"
+              class="p-button-outlined p-button-secondary flex-1" 
+              (click)="onCancel()"
+              icon="pi pi-times"
+              tooltip="Cancelar Registro"
+              tooltipPosition="top"
+            ></button>
+          </div>
+        </div>
+      </div>
+<p-toast></p-toast>

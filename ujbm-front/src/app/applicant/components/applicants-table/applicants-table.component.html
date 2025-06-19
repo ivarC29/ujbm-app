@@ -1,0 +1,575 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="table-card dark:bg-gray-900 shadow-md rounded-lg overflow-x-auto">
+  <p-table
+    #dt
+    [value]="applicants()" 
+    [loading]="loading()"
+    [rowHover]="true"
+    [showGridlines]="true"
+    [paginator]="false"
+    styles="min-width: 1200px; width: 100%;"
+    styleClass="p-datatable-striped p-datatable-gridlines p-datatable-sm w-full"
+    responsiveLayout="scroll"
+    [size]="'small'"
+    (onSort)="onSort($event)"
+    [sortMode]="'single'"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex flex-wrap sm:flex-nowrap justify-between items-center gap-3 w-full">
+        <div class="flex justify-content-start w-full sm:w-auto">
+          <button
+            pButton
+            label="Limpiar"
+            class="p-button-outlined w-full sm:w-auto"
+            icon="pi pi-filter-slash"
+            (click)="clear(dt)"
+          ></button>
+        </div>
+        <div class="flex justify-content-center w-full sm:w-auto">
+          <button
+            pButton
+            label="Subir Notas"
+            class="p-button-success w-full sm:w-auto"
+            icon="pi pi-upload"
+            (click)="showUploadScoresDialog()"
+          ></button>
+        </div>
+        <div class="flex justify-content-end w-full sm:w-auto">
+          <p-iconfield iconPosition="left" class="flex-grow-1 sm:ml-auto">
+            <p-inputicon>
+              <i class="pi pi-search"></i>
+            </p-inputicon>
+            <input
+              pInputText
+              type="text"
+              class="w-full"
+              (input)="onGlobalSearch($any($event.target).value)"
+              placeholder="Buscar postulante..."
+              #searchInput
+            />
+          </p-iconfield>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <!-- Fila 1: Headers y sorting -->
+      <tr>
+        <th pSortableColumn="fullName" style="min-width: 12rem">
+          <div class="flex justify-between items-center">
+            Nombre
+            <p-sortIcon field="fullName"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th  style="min-width: 10rem">
+          <div class="flex justify-between items-center">
+            Modalidad
+          </div>
+        </th>
+        
+        <th pSortableColumn="programName" style="min-width: 14rem;" class="program-column">
+          <div class="flex justify-between items-center">
+            Programa
+            <p-sortIcon field="programName"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="registryDate" style="min-width: 10rem">
+          <div class="flex justify-between items-center">
+            Fecha de registro
+            <p-sortIcon field="registryDate"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th  style="min-width: 8rem">
+          <div class="flex justify-between items-center">
+            Estado
+          </div>
+        </th>
+
+        <th style="min-width: 4rem">
+          <div>DNI</div>
+        </th>
+        
+        <th style="min-width: 4rem">
+          <div>Certificado</div>
+        </th>
+        
+        <th style="min-width: 4rem">
+          <div>Foto</div>
+        </th>
+        
+        <th style="min-width: 4rem">
+          <div>Pago Exam</div>
+        </th>
+        
+        <th style="min-width: 4rem">
+          <div>Nota</div>
+        </th>
+        
+        <th style="min-width: 4rem">
+          <div>Pago 1ra Cuota</div>
+        </th>
+        
+        <th style="min-width: 4rem">
+          <div>Sílabos</div>
+        </th>
+      </tr>
+
+      <!-- Fila 2: Filtros separados -->
+      <tr>
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="text"
+            placeholder="Filtrar nombre..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('fullName', $any($event.target).value)"
+            (click)="$event.stopPropagation()"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+        <p-select
+          [options]="enrollmentModes()"
+          optionLabel="name"
+          optionValue="code"
+          placeholder="Filtrar modalidad..."
+          class="w-full"
+          (onChange)="onEnrollmentModeFilterChange($event)"
+          (click)="$event.stopPropagation()"
+          [style]="{'width': '100%', 'min-width': '140px'}"
+          styleClass="text-xs"
+          appendTo="body"
+          [showClear]="true"
+           ></p-select>
+        </th>
+        
+        <th style="padding: 8px; max-width: 14rem;" class="program-column">
+          <p-select
+            [options]="programs()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Filtrar programa..."
+            class="w-full"
+            [showClear]="true"
+            (onChange)="onProgramFilterChange($event)"
+            (click)="$event.stopPropagation()"
+            [style]="{'width': '100%', 'min-width': '140px'}"
+            styleClass="text-xs"
+            appendTo="body"
+          >     
+          </p-select>         
+        </th>
+        
+        <th style="padding: 8px;">
+          <p-datepicker
+            [(ngModel)]="dateFilterValue"
+            (onSelect)="onDateSelect($event)"
+            (onClearClick)="clearDateFilter()"
+            [showButtonBar]="true"
+            dateFormat="dd/mm/yy"
+            placeholder="dd/MM/yyyy"
+            [maxDate]="today"
+            [showIcon]="true"
+            appendTo="body"
+            class="w-full"
+            styleClass="p-inputtext-sm date-filter-input"
+            (click)="$event.stopPropagation()"
+            [style]="{'width': '100%'}"
+          ></p-datepicker>
+        </th>
+        
+        <th style="padding: 8px;">
+          <p-select
+            [options]="statusList()"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Filtrar estado..."
+            class="w-full"
+            [showClear]="true"
+            (onChange)="onStatusFilterChange($event)"
+            (click)="$event.stopPropagation()"
+            [style]="{'width': '100%', 'min-width': '120px'}"
+            styleClass="text-xs"
+            appendTo="body"
+          ></p-select>
+        </th>
+
+        <!-- Columnas de documentos sin filtro -->
+        <th style="padding: 8px;"></th>
+        <th style="padding: 8px;"></th>
+        <th style="padding: 8px;"></th>
+        <th style="padding: 8px;"></th>
+        <th style="padding: 8px;"></th>
+        <th style="padding: 8px;"></th>
+        <th style="padding: 8px;"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-applicant>
+      <tr class="applicant-row">
+        <td class="py-3 px-4">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-gray-900 dark:text-gray-100">
+                {{ applicant.fullName }}
+              </span>
+              @if (applicant.enrolled) {
+                <i 
+                  class="pi pi-check-circle text-green-500"
+                  pTooltip="Postulante ingresado"
+                  tooltipPosition="right"
+                  style="font-size: 1.2rem;">
+                </i>
+              }
+            </div>
+            
+            <!-- Botón de conversión a estudiante -->
+            <div class="flex items-center">
+              @if (applicant.enrolled && !applicant.converted) {
+                <button 
+                pButton 
+                type="button"
+                icon="pi pi-graduation-cap"
+                class="p-button-success p-button-sm"
+                [loading]="convertingStudents.has(applicant.id)"
+                [disabled]="convertingStudents.has(applicant.id)"
+                pTooltip="Convertir a estudiante"
+                tooltipPosition="top"
+                (click)="convertToStudent(applicant)"
+              ></button>
+              } @else if (applicant.converted) {
+                <i 
+                  class="pi pi-graduation-cap text-blue-500"
+                  pTooltip="Ya convertido a estudiante"
+                  tooltipPosition="top"
+                  style="font-size: 1.2rem;">
+                </i>
+              }
+            </div>
+          </div>
+        </td>
+        
+        <td class="py-3 px-4">
+          <span class="text-sm">{{ applicant.enrollmentModeName }}</span>
+        </td>
+        
+        <td class="py-3 px-4">
+          <span class="text-sm">
+            {{ applicant.programName }}
+          </span>
+        </td>
+        
+        <td class="py-3 px-4">
+          <span class="text-sm">{{ applicant.registryDate }}</span>
+        </td>
+        <!-- CON TOOLTIP -->
+        <!-- <td class="py-3 px-4 program-column">
+          <span 
+            class="font-medium text-gray-700 dark:text-gray-300 truncate-text"
+            [pTooltip]="applicant.programName"
+            tooltipPosition="top"
+            [tooltipOptions]="{
+              showDelay: 500,
+              hideDelay: 300,
+              positionStyle: 'absolute',
+              appendTo: 'body'
+            }"
+          >
+            {{ applicant.programName }}
+          </span>
+        </td> -->
+        
+        <td class="py-3 px-4 text-center">
+          <p-tag
+            [value]="getStatusLabel(applicant.statusName)"
+            [severity]="getSeverity(applicant.statusName)"
+          ></p-tag>
+        </td>
+        
+        <td class="py-3 px-4 text-center">
+          <p-button
+            icon="pi pi-id-card"
+            [severity]="applicant.dniValidated ? 'success' : 'secondary'"
+            (click)="openDocumentModal(applicant, 'dni')"
+            [rounded]="true"
+            size="small"
+          />
+        </td>
+        
+        <td class="py-3 px-4 text-center">
+          <p-button
+            icon="pi pi-file"
+            [severity]="applicant.certificateValidated ? 'success' : 'secondary'"
+            (click)="openDocumentModal(applicant, 'certificate')"
+            [rounded]="true"
+            size="small"
+          />
+        </td>
+        
+        <td class="py-3 px-4 text-center">
+          <p-button
+            icon="pi pi-camera"
+            [severity]="applicant.photoValidated ? 'success' : 'secondary'"
+            (click)="openDocumentModal(applicant, 'photo')"
+            [rounded]="true"
+            size="small"
+          />
+        </td>
+        
+        <td class="py-3 px-4 text-center">
+        @if (applicant.paymentReceiptFile1Id) {
+          <p-button
+            icon="pi pi-credit-card"
+            severity="success"
+            size="small"
+            pTooltip="Ver comprobante de pago"
+            (click)="openDocumentModal(applicant, 'PAYMENT1')"
+          ></p-button>
+        } @else {
+          <p-button
+            icon="pi pi-credit-card"
+            [severity]="applicant.hasPaidAdmissionFee ? 'info' : 'warn'"
+            size="small"
+            [label]="applicant.hasPaidAdmissionFee ? '' : ''"
+            [pTooltip]="getPayment1Tooltip(applicant)"
+            [disabled]="!canManagePayment1(applicant)"
+            (click)="openPayment1Modal(applicant)"
+          ></p-button>
+        }
+      </td>
+        
+        <td class="py-3 px-4 text-center">
+          <p-button
+            [label]="applicant.totalScore !== undefined && applicant.totalScore !== null ? applicant.totalScore.toString() : '-'"
+            [severity]="applicant.isApproved ? 'success' : (applicant.totalScore !== null && applicant.totalScore > 0) ? 'danger' : 'secondary'"
+            [rounded]="true"
+            size="small"
+            (click)="showScoreDetails(applicant)"
+            pTooltip="Click para ver detalles"
+          ></p-button>
+        </td>
+        
+        <td class="py-3 px-4 text-center">
+          <p-button
+            icon="pi pi-credit-card"
+            [severity]="applicant.enrolled ? 'success' : 'secondary'"
+            (click)="openDocumentModal(applicant, 'PAYMENT2')"
+            [rounded]="true"
+            size="small"
+            [disabled]="!applicant.paymentReceiptFile2Id"
+          />
+        </td>
+        
+        <td class="py-3 px-4 text-center">
+          @if (applicant.enrollmentModeCode === '04') {
+            <p-button
+              icon="pi pi-file-pdf"
+              severity="info"
+              (click)="openDocumentModal(applicant, 'syllabus')"
+              [rounded]="true"
+              size="small"
+              pTooltip="Ver sílabos"
+              tooltipPosition="top"
+            />
+          } @else {
+            <span class="text-gray-400">N/A</span>
+          }
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="loadingbody">
+      @for (item of [1,2,3,4,5]; track item) {
+        <tr>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.25rem" width="8rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.25rem" width="10rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.25rem" width="6rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="2rem" width="2rem" class="mx-auto"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="2rem" width="2rem" class="mx-auto"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="2rem" width="2rem" class="mx-auto"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="2rem" width="2rem" class="mx-auto"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="2rem" width="2rem" class="mx-auto"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="2rem" width="2rem" class="mx-auto"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="2rem" width="2rem" class="mx-auto"></p-skeleton>
+          </td>
+        </tr>
+      }
+    </ng-template>
+
+    <!-- Empty message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="12" class="text-center py-8">
+          <div class="flex flex-col items-center gap-4">
+            <i class="pi pi-users text-5xl text-blue-400 dark:text-blue-500"></i>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 m-0 mb-2">
+                No hay postulantes registrados
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm m-0 mb-3">
+                Los postulantes aparecerán aquí una vez que se registren en el sistema.
+              </p>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    
+  </p-table>
+</div>
+
+<!-- Paginador -->
+<div class="w-full">
+  <p-paginator
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [first]="first"
+    [showFirstLastIcon]="true"
+    [showPageLinks]="true"
+    [rowsPerPageOptions]="[5, 10, 16, 24, 32]"
+    (onPageChange)="onPageChange($event)"
+    class="mt-4 w-full"
+    styles="width: 100%;"
+  >
+  </p-paginator>
+</div>
+
+<!-- File Upload Dialog -->
+<app-file-upload-dialog
+  [(visible)]="showScoresDialog"
+  header="Subir Archivo de Notas"
+  acceptedFormats=".txt,.csv"
+  infoMessage="El archivo debe tener formato TXT con los campos: CODIGO;NOMBRE;NOTA;ESTADO;RESPUESTAS"
+  [uploading]="uploadingScores"
+  (fileSelected)="handleFileSelected($event)"
+  (upload)="handleUploadScores($event)"
+  (cancel)="handleDialogCancel()"
+></app-file-upload-dialog>
+
+<!-- Toast para conversión -->
+<p-toast key="confirm-conversion" position="center" [baseZIndex]="10000" styleClass="conversion-toast">
+  <ng-template pTemplate="message" let-message>
+    <div class="p-3 sm:p-4 md:p-6 max-w-[98vw] sm:max-w-[95vw] md:max-w-lg w-full conversion-toast-content">
+      <div class="flex flex-col gap-3 sm:gap-4">
+        <!-- Header con icono y título -->
+        <div class="flex items-start gap-3 sm:gap-4">
+          <div class="flex-shrink-0">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <i class="pi pi-graduation-cap text-blue-600 text-lg sm:text-xl"></i>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h5 class="m-0 font-semibold text-base sm:text-lg text-gray-900 dark:text-white break-words">
+              {{ message.summary }}
+            </h5>
+            <p class="mt-1 sm:mt-2 mb-0 text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed break-words">
+              {{ message.detail }}
+            </p>
+          </div>
+        </div>
+          <!-- Información del postulante -->
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-2 sm:p-3 md:p-4 border border-gray-200 dark:border-gray-700">
+          <div class="grid grid-cols-1 gap-1 sm:gap-2 text-xs sm:text-sm">
+            <div class="flex justify-between items-start gap-2 flex-wrap">
+              <span class="font-medium text-gray-700 dark:text-gray-300 min-w-0">Postulante:</span>
+              <span class="text-gray-900 dark:text-white font-semibold break-words text-right flex-1">{{ message.data?.fullName }}</span>
+            </div>
+            <div class="flex justify-between items-start gap-2 flex-wrap">
+              <span class="font-medium text-gray-700 dark:text-gray-300 min-w-0">Programa:</span>
+              <span class="text-gray-900 dark:text-white break-words text-right flex-1">{{ message.data?.programName }}</span>
+            </div>
+            <div class="flex justify-between items-start gap-2 flex-wrap">
+              <span class="font-medium text-gray-700 dark:text-gray-300 min-w-0">Modalidad:</span>
+              <span class="text-gray-900 dark:text-white break-words text-right flex-1">{{ message.data?.enrollmentModeName }}</span>
+            </div>
+            @if (message.data?.totalScore !== null && message.data?.totalScore !== undefined) {
+            <div class="flex justify-between items-start gap-2 flex-wrap">
+              <span class="font-medium text-gray-700 dark:text-gray-300 min-w-0">Puntaje:</span>
+              <span class="text-gray-900 dark:text-white font-semibold text-right">{{ message.data?.totalScore }}</span>
+            </div>
+            }
+          </div>
+        </div>
+        
+        <!-- Información adicional -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 sm:p-4 border border-blue-200 dark:border-blue-800">
+          <h6 class="m-0 mb-2 sm:mb-3 font-medium text-blue-800 dark:text-blue-200 text-xs sm:text-sm">
+            <i class="pi pi-info-circle mr-2"></i>Acciones que se realizarán:
+          </h6>
+          <ul class="list-none text-xs sm:text-sm text-blue-700 dark:text-blue-300 space-y-1 sm:space-y-2 m-0 pl-0">
+            <li class="flex items-start gap-2">
+              <i class="pi pi-check text-green-600 mt-0.5 text-xs flex-shrink-0"></i>
+              <span class="break-words">Generación automática de código de estudiante</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="pi pi-check text-green-600 mt-0.5 text-xs flex-shrink-0"></i>
+              <span class="break-words">Creación de credenciales de acceso al sistema</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="pi pi-check text-green-600 mt-0.5 text-xs flex-shrink-0"></i>
+              <span class="break-words">Envío automático de correo con datos de acceso</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="pi pi-check text-green-600 mt-0.5 text-xs flex-shrink-0"></i>
+              <span class="break-words">Habilitación completa del módulo de estudiante</span>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-2">
+          <button
+            pButton
+            type="button"
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-text p-button-secondary w-full sm:w-auto"
+            size="small"
+            (click)="cancelConversion()"
+          ></button>
+          <button
+            pButton
+            type="button"
+            label="Convertir a estudiante"
+            icon="pi pi-graduation-cap"
+            class="p-button-success w-full sm:w-auto"
+            size="small"
+            [loading]="convertingStudents.has(message.data?.id)"
+            [disabled]="convertingStudents.has(message.data?.id)"
+            (click)="confirmConversion(message.data)"
+          ></button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-toast>

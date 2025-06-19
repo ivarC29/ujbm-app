@@ -1,0 +1,175 @@
+
+<div class="card ">
+  
+  <!-- Validation  -->
+  @if (enrollmentData && enrollmentData.status !== 'CONFIRMED') {
+    <div class="enrollment-pending-notice rounded-2xl shadow-lg mb-8 bg-gradient-to-r from-amber-600 to-orange-500 text-white">
+      <div class="notice-content p-8 text-center">
+        <div class="notice-icon mb-4">
+          <i class="pi pi-clock text-6xl opacity-80"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-3">Matrícula Pendiente de Aprobación</h2>
+        <p class="text-lg opacity-90 mb-4">
+          Tu proceso de matrícula aún está siendo revisado por la administración académica.
+        </p>
+        <div class="status-info p-4 bg-white/20 rounded-lg">
+          <span class="text-sm font-medium">Estado actual: </span>
+          <span class="font-bold">{{ enrollmentData.status }}</span>
+        </div>
+        <p class="text-sm mt-4 opacity-80">
+          Recibirás una notificación una vez que tu matrícula sea confirmada.
+        </p>
+      </div>
+    </div>
+  }  <!-- Main Dashboard Header -->
+  @if (enrollmentData && enrollmentData.status === 'CONFIRMED') {
+    <div class="dashboard-header rounded-2xl shadow-lg mb-8 bg-gradient-to-r from-red-700 via-red-600 to-blue-700 text-white">
+      <div class="header-content p-8">
+        <div class="header-info mb-6">
+          <h1 class="dashboard-title text-4xl font-black mb-2 text-white drop-shadow-lg">Mis Cursos</h1>
+          <p class="dashboard-subtitle text-lg text-white/95 font-medium drop-shadow-sm">
+            Gestiona y revisa tus cursos matriculados para el período académico actual
+          </p>
+        </div>
+        
+        <div class="student-details mb-6 p-6 bg-white/15 rounded-xl backdrop-blur-sm border border-white/20">
+          <div class="grid md:grid-cols-2 gap-4">            <div class="student-info">
+              <h2 class="text-xl font-bold mb-2 text-white drop-shadow-md">{{ enrollmentData.studentName }}</h2>
+              <div class="student-meta space-y-1 text-sm text-white/95">
+                <div><span class="font-semibold text-white drop-shadow-sm">Código:</span> {{ enrollmentData.studentCode }}</div>
+                <div><span class="font-semibold text-white drop-shadow-sm">Programa:</span> {{ enrollmentData.programName }}</div>
+                <div><span class="font-semibold text-white drop-shadow-sm">Período:</span> {{ enrollmentData.academicPeriodName }}</div>
+              </div>
+            </div>
+            <div class="stats-grid grid grid-cols-2 gap-4">
+              <div class="stat-card bg-white/25 p-4 rounded-lg text-center border border-white/30">
+                <div class="stat-number text-2xl font-bold text-white drop-shadow-lg">{{ enrollmentData.details.length }}</div>
+                <div class="stat-label text-sm text-white/95 font-medium">Cursos Matriculados</div>
+              </div>
+              <div class="stat-card bg-white/25 p-4 rounded-lg text-center border border-white/30">
+                <div class="stat-number text-2xl font-bold text-white drop-shadow-lg">{{ getTotalCredits() }}</div>
+                <div class="stat-label text-sm text-white/95 font-medium">Créditos Totales</div>
+              </div>
+            </div>
+          </div>
+        </div>        <!-- Navigation Tabs -->
+        <div class="view-navigation flex gap-2">
+          <button 
+            [class]="'nav-btn px-6 py-3 rounded-lg font-medium transition-all ' + (view === 'list' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/20 text-white hover:bg-white/30')"
+            (click)="showList()">
+            <i class="pi pi-list mr-2"></i>
+            Lista de Cursos
+          </button>
+          <button 
+            [class]="'nav-btn px-6 py-3 rounded-lg font-medium transition-all ' + (view === 'calendar' ? 'bg-white text-blue-900 shadow-lg' : 'bg-white/20 text-white hover:bg-white/30')"
+            (click)="showCalendar()">
+            <i class="pi pi-calendar mr-2"></i>
+            Horario Completo
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-container flex flex-col items-center justify-center py-20">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mb-4"></div>
+      <p class="text-lg text-gray-600 dark:text-gray-400">Cargando cursos...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error) {
+    <div class="error-container text-center py-20">
+      <div class="error-icon mb-4">
+        <i class="pi pi-exclamation-triangle text-5xl text-red-500"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-red-600 mb-2">Error al cargar los cursos</h3>
+      <p class="text-gray-600 dark:text-gray-400">{{ error }}</p>
+    </div>
+  }
+
+  <!-- Course List View -->
+  @if (!loading && !error && enrollmentData && enrollmentData.status === 'CONFIRMED' && view === 'list') {
+    <div class="courses-grid grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      @for (course of enrollmentData.details; track course.id) {
+        <div class="course-card rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all hover:shadow-xl">          <!-- Card Header -->
+          <div class="card-header bg-gradient-to-r from-blue-600 to-red-500 text-white p-6 rounded-t-xl">
+            <div class="course-info">
+              <div class="course-code text-sm font-semibold text-blue-100 mb-1">{{ course.courseCode }}</div>
+              <h3 class="course-name text-lg font-bold leading-tight mb-3 text-white">{{ course.courseName }}</h3>
+              <div class="course-meta flex gap-2">
+                <span class="section-badge bg-white/20 px-2 py-1 rounded text-xs font-medium">
+                  Sección {{ course.section }}
+                </span>
+                <span class="credits-badge bg-white/20 px-2 py-1 rounded text-xs font-medium">
+                  {{ course.credits }} créditos
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body p-6">            <!-- Teacher Info -->
+            <div class="teacher-info mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div class="flex items-center gap-2 text-sm">
+                <i class="pi pi-user text-blue-600"></i>
+                <span class="font-medium text-gray-800 dark:text-gray-100">Docente:</span>
+              </div>
+              <div class="teacher-name text-sm font-semibold text-gray-900 dark:text-white mt-1">
+                {{ course.teacherName }}
+              </div>
+            </div>            <!-- Schedule Section -->
+            <div class="schedule-section">
+              <h4 class="schedule-title text-sm font-semibold text-gray-800 dark:text-gray-100 mb-3 flex items-center gap-2">
+                <i class="pi pi-clock text-blue-600"></i>
+                Horario de Clases
+              </h4>
+              <div class="schedule-list space-y-2">
+                @for (schedule of course.schedules; track schedule.id) {
+                  <div class="schedule-item flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-lg">
+                    <div class="day-badge bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold min-w-[40px] text-center">
+                      {{ getDayAbbreviation(schedule.day) }}
+                    </div>
+                    <div class="time-info">
+                      <span class="time-range text-sm font-medium text-gray-900 dark:text-white">
+                        {{ formatTime(schedule.startTime) }} - {{ formatTime(schedule.endTime) }}
+                      </span>
+                      <span class="duration text-xs text-gray-600 dark:text-gray-300 ml-2">
+                        ({{ calculateDuration(schedule.startTime, schedule.endTime) }})
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+  <!-- Calendar View -->
+  @if (!loading && !error && enrollmentData && enrollmentData.status === 'CONFIRMED' && view === 'calendar') {
+    <app-student-schedule-calendar 
+      [schedule]="getSelectedSchedule()"
+      [courses]="enrollmentData.details">
+    </app-student-schedule-calendar>
+  }
+
+  <!-- Empty State -->
+  @if (!loading && !error && enrollmentData && enrollmentData.details.length === 0) {
+    <div class="empty-state text-center py-20">
+      <div class="empty-icon mb-6">
+        <i class="pi pi-book text-6xl text-gray-400"></i>
+      </div>
+      <h3 class="empty-title text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-3">
+        No tienes cursos matriculados
+      </h3>
+      <p class="empty-message text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+        No se encontraron cursos matriculados para el período académico actual.
+        Contacta con la administración académica si crees que esto es un error.
+      </p>
+    </div>
+  }
+</div>

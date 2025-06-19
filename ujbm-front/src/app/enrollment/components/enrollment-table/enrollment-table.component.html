@@ -1,0 +1,46 @@
+<p-table [value]="enrolledCourses" [tableStyle]="{ 'min-width': '50rem' }" [scrollable]="true" scrollHeight="400px"
+  [resizableColumns]="true" styleClass="p-datatable-sm p-datatable-gridlines" responsiveLayout="scroll">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Curso</th>
+      <th>Docente</th>
+      <th pSortableColumn="credits">
+        Créditos
+        <p-sortIcon field="credits"></p-sortIcon>
+      </th>
+      <th>Horas</th>
+      <th pSortableColumn="cycle">
+        Ciclo
+        <p-sortIcon field="cycle"></p-sortIcon>
+      </th>
+      <th>Sección</th>
+      <th>Modalidad</th>
+      <th>Horario</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-course>
+    <tr>
+      <td>{{ course.name }}</td>
+      <td>{{ course.teacher.name }}</td>
+      <td>{{ course.credits }}</td>
+      <td>{{ calculateWeeklyHours(course.sessions) }}</td>
+      <td>{{ course.cycle }}</td>
+      <td>{{ course.section }}</td>
+      <td>
+        <span [class]="'modalidad-badge ' + course.modality.toLowerCase()">
+          {{ course.modality }}
+        </span>
+      </td>
+      <td>
+        <div class="whitespace-pre-line">
+          {{ formatSchedule(course.sessions) }}
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="8" class="text-center p-4">No hay cursos inscritos.</td>
+    </tr>
+  </ng-template>
+</p-table>

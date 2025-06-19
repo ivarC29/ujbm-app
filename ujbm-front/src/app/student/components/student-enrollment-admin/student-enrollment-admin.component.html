@@ -1,0 +1,555 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="flex justify-between items-center">
+  <div>
+    <h1 class="text-2xl font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+      <i class="pi pi-book text-blue-600 dark:text-blue-400"></i>
+      Gestión de Matrículas
+    </h1>
+    <p class="text-gray-600 dark:text-gray-400 mt-1">Administre las matrículas de estudiantes del sistema académico</p>
+  </div>
+</div>
+
+<div class="table-card dark:bg-gray-900 shadow-md rounded-lg overflow-x-auto mt-4">
+  <p-table
+    #dt
+    [value]="items()" 
+    [loading]="loading()"
+    [rowHover]="true"
+    [showGridlines]="true"
+    [paginator]="false"
+    styles="min-width: 1200px; width: 100%;"
+    styleClass="p-datatable-striped p-datatable-gridlines p-datatable-sm w-full"
+    responsiveLayout="scroll"
+    [size]="'small'"
+    (onSort)="onSort($event)"
+    [sortMode]="'single'"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex flex-wrap sm:flex-nowrap justify-between items-center gap-3 w-full">
+        <div class="flex justify-content-start w-full sm:w-auto">
+          <button
+            pButton
+            label="Limpiar Filtros"
+            class="p-button-outlined w-full sm:w-auto"
+            icon="pi pi-filter-slash"
+            (click)="clear(dt)"
+          ></button>
+        </div>
+        <div class="flex justify-content-end w-full sm:w-auto">
+          <p-iconfield iconPosition="left" class="flex-grow-1 sm:ml-auto">
+            <p-inputicon>
+              <i class="pi pi-search"></i>
+            </p-inputicon>
+            <input
+              pInputText
+              type="text"
+              class="w-full"
+              (input)="onGlobalSearch($any($event.target).value)"
+              placeholder="Buscar por nombre de estudiante..."
+            />
+          </p-iconfield>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <!-- Fila 1: Headers y sorting -->
+      <tr>
+        <th pSortableColumn="studentCode" style="min-width: 8rem">
+          <div class="flex justify-between items-center">
+            Código
+            <p-sortIcon field="studentCode"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="studentName" style="min-width: 12rem">
+          <div class="flex justify-between items-center">
+            Estudiante
+            <p-sortIcon field="studentName"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th  style="min-width: 10rem">
+          <div class="flex justify-between items-center">
+            Programa
+          </div>
+        </th>
+        
+        <th pSortableColumn="enrollmentDate" style="min-width: 8rem">
+          <div class="flex justify-between items-center">
+            Fecha
+            <p-sortIcon field="enrollmentDate"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="academicPeriodName" style="min-width: 8rem">
+          <div class="flex justify-between items-center">
+            Período
+            <p-sortIcon field="academicPeriodName"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="status" style="min-width: 8rem">
+          <div class="flex justify-between items-center">
+            Estado
+            <p-sortIcon field="status"></p-sortIcon>
+          </div>
+        </th>
+
+        <th style="min-width: 10rem">
+          <div>Acciones</div>
+        </th>
+      </tr>
+
+      <!-- Fila 2: Filtros -->
+      <tr>
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="text"
+            placeholder="Código..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('studentCode', $any($event.target).value)"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="text"
+            placeholder="Nombre..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('studentName', $any($event.target).value)"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+          <!-- Corregir el filtro de programa: -->
+          <p-select
+            [options]="programs()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Programa..."
+            class="w-full"
+            [showClear]="true"
+            (onChange)="onProgramFilterChange($event)"
+            styleClass="text-xs"
+            appendTo="body"
+            [filter]="true"
+            filterBy="name"
+            filterPlaceholder="Buscar programa..."
+          >
+            <ng-template let-option pTemplate="item">
+              <span 
+                class="block truncate w-full" 
+                [title]="option.name"
+                style="max-width: 250px;"
+              >
+                {{ option.name }}
+              </span>
+            </ng-template>
+            
+            <ng-template let-selectedOption pTemplate="selectedItem">
+              <span 
+                class="block truncate" 
+                [title]="selectedOption?.name"
+                style="max-width: 120px;"
+              >
+                {{ selectedOption?.name }}
+              </span>
+            </ng-template>
+          </p-select>
+        </th>
+        
+        <th style="padding: 8px;">
+        <p-datepicker
+            placeholder="Fecha..."
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            [showClear]="true"
+            styleClass="w-full"
+            inputStyleClass="p-inputtext-sm w-full"
+            (onSelect)="onDateFilterChange($event)"
+            (onClear)="onDateFilterChange(null)"
+            [ngModel]="getDateFilterValue()"
+            [fluid]="true"
+            appendTo="body"
+        ></p-datepicker>
+    </th>
+        
+        <th style="padding: 8px;">
+          <!-- No hay filtro para período académico -->
+        </th>
+
+        <th style="padding: 8px;">
+          <p-select
+            [options]="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Estado..."
+            class="w-full"
+            [showClear]="true"
+            (onChange)="onStatusFilterChange($event)"
+            styleClass="text-xs"
+            appendTo="body"
+          ></p-select>
+        </th>
+
+        <th style="padding: 8px;">
+          <!-- Acciones -->
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-enrollment>
+      <tr class="enrollment-row">
+        <td class="py-3 px-4">
+          <span class="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+            {{ enrollment.studentCode }}
+          </span>
+        </td>
+        <td class="py-3 px-4">
+          <span class="font-semibold text-gray-900 dark:text-gray-100">
+            {{ enrollment.studentName }}
+          </span>
+        </td>
+        <td class="py-3 px-4">
+          <span 
+            class="text-sm text-gray-700 dark:text-gray-300 block truncate" 
+            [title]="enrollment.programName"
+            pTooltip="{{ enrollment.programName }}"
+            tooltipPosition="top"
+          >
+            {{ enrollment.programName }}
+          </span>
+        </td>
+        <td class="py-3 px-4">
+          <span class="text-sm text-gray-700 dark:text-gray-300">
+            {{ formatDate(enrollment.enrollmentDate) }}
+          </span>
+        </td>
+        <td class="py-3 px-4">
+          <span class="text-sm text-gray-700 dark:text-gray-300">
+            {{ enrollment.academicPeriodName }}
+          </span>
+        </td>
+
+        <td class="py-3 px-4">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" [ngClass]="getStatusClass(enrollment.status)">
+            {{ getStatusLabel(enrollment.status) }}
+          </span>
+        </td>
+        <td class="py-3 px-4">
+          <div class="flex gap-2 justify-center">
+            <!-- Botón Ver Detalles - Siempre disponible -->
+            <button
+              pButton
+              [icon]="getButtonIcon(enrollment.id, 'view')"
+              class="p-button-rounded p-button-sm p-button-info"
+              pTooltip="Ver detalles"
+              (click)="viewEnrollmentDetails(enrollment)"
+              [disabled]="isActionDisabled(enrollment.id, 'view')"
+              type="button"
+            ></button>
+            
+            <!-- Solo mostrar acciones para estados PENDING -->
+            @if (enrollment.status === 'PENDING') {
+              <button
+                pButton
+                [icon]="getButtonIcon(enrollment.id, 'confirm')"
+                class="p-button-rounded p-button-sm p-button-success"
+                pTooltip="Confirmar matrícula"
+                (click)="confirmEnrollment(enrollment.id)"
+                [disabled]="isActionDisabled(enrollment.id, 'confirm')"
+                type="button"
+              ></button>
+              
+              <button
+                pButton
+                [icon]="getButtonIcon(enrollment.id, 'reject')"
+                class="p-button-rounded p-button-sm p-button-danger"
+                pTooltip="Rechazar matrícula"
+                (click)="rejectEnrollment(enrollment.id)"
+                [disabled]="isActionDisabled(enrollment.id, 'reject')"
+                type="button"
+              ></button>
+            }
+            
+            <!-- Para estados CONFIRMED, CANCELLED, DRAFT mostrar estado sin botones activos -->
+            @if (enrollment.status === 'CONFIRMED') {
+              <div class="flex items-center gap-2">
+                <span 
+                  class="text-xs text-green-600 dark:text-green-400 font-medium px-2 py-1 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800"
+                  pTooltip="Matrícula confirmada - Sin acciones disponibles"
+                >
+                  <i class="pi pi-check-circle mr-1"></i>
+                  Confirmada
+                </span>
+              </div>
+            }
+            
+            @if (enrollment.status === 'CANCELLED') {
+              <div class="flex items-center gap-2">
+                <span 
+                  class="text-xs text-red-600 dark:text-red-400 font-medium px-2 py-1 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800"
+                  pTooltip="Matrícula rechazada - Sin acciones disponibles"
+                >
+                  <i class="pi pi-times-circle mr-1"></i>
+                  Rechazada
+                </span>
+              </div>
+            }
+            
+            @if (enrollment.status === 'DRAFT') {
+              <div class="flex items-center gap-2">
+                <span 
+                  class="text-xs text-blue-600 dark:text-blue-400 font-medium px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800"
+                  pTooltip="Matrícula en proceso - Esperando finalización del estudiante"
+                >
+                  <i class="pi pi-clock mr-1"></i>
+                  En Proceso
+                </span>
+              </div>
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="loadingbody">
+      @for (item of [1,2,3,4,5]; track item) {
+        <tr>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.5rem" width="5rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.5rem" width="5rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.5rem" width="5rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="2rem" width="6rem" class="mx-auto"></p-skeleton>
+          </td>
+        </tr>
+      }
+    </ng-template>
+
+    <!-- Empty message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center py-8"> <!-- Cambiar de 8 a 7 -->
+          <div class="flex flex-col items-center gap-4">
+            <i class="pi pi-book text-5xl text-blue-400 dark:text-blue-500"></i>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 m-0 mb-2">
+                No hay matrículas registradas
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm m-0 mb-3">
+                No se encontraron matrículas que coincidan con los filtros aplicados.
+              </p>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Paginador -->
+<div class="w-full">
+  <p-paginator
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [first]="first"
+    [showFirstLastIcon]="true"
+    [showPageLinks]="true"
+    [rowsPerPageOptions]="[5, 10, 16, 24, 32]"
+    (onPageChange)="onPageChange($event)"
+    class="mt-4 w-full"
+    styles="width: 100%;"
+  >
+  </p-paginator>
+</div>
+
+<!-- Diálogo de Detalles -->
+<p-dialog
+  [(visible)]="detailsDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{width: '90vw', maxWidth: '800px'}"
+  header="Detalles de Matrícula"
+  (onHide)="closeDetailsDialog()"
+>
+  <div class="p-4">
+    @if (loadingDetails) {
+      <div class="flex justify-center items-center h-60">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    } @else if (selectedEnrollmentDetails) {
+      <div class="space-y-6">
+        <!-- Cabecera de información -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-100 dark:border-blue-900">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Estudiante:</p>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                {{ selectedEnrollmentDetails.studentName }}
+              </h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                <span class="font-mono">{{ selectedEnrollmentDetails.studentCode }}</span> | 
+                {{ selectedEnrollmentDetails.programName }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Matrícula:</p>
+              <p class="text-sm">
+                <span class="font-semibold text-gray-900 dark:text-gray-100">
+                  {{ formatDate(selectedEnrollmentDetails.enrollmentDate) }}
+                </span> | 
+                Período: <span class="font-semibold">{{ selectedEnrollmentDetails.academicPeriodName }}</span>
+              </p>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium mt-2" 
+                    [ngClass]="getStatusClass(selectedEnrollmentDetails.status)">
+                {{ getStatusLabel(selectedEnrollmentDetails.status) }}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Lista de cursos -->
+        <div>
+          <h4 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3">
+            Cursos Inscritos ({{ selectedEnrollmentDetails.details.length }})
+          </h4>
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full border-collapse border border-gray-200 dark:border-gray-700">
+              <thead>
+                <tr class="bg-gray-50 dark:bg-gray-700">
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
+                    Código
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
+                    Curso
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
+                    Sección
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
+                    Créditos
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
+                    Estado
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @for (detail of selectedEnrollmentDetails.details; track detail.id) {
+                  <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="px-4 py-3 text-sm font-mono text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">
+                      {{ detail.courseCode }}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">
+                      {{ detail.courseName }}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">
+                      {{ detail.section }}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-center text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        {{ detail.credits }}
+                      </span>
+                    </td>
+                    <td class="px-4 py-3 text-sm border-b border-gray-200 dark:border-gray-600">
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        {{ getDetailStatusLabel(detail.status) }}
+                      </span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                      No hay cursos inscritos en esta matrícula.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Acciones para matrículas pendientes -->
+      @if (selectedEnrollmentDetails.status === 'PENDING') {
+        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <button
+            pButton
+            [icon]="loadingReject() === selectedEnrollmentDetails.id ? 'pi pi-spin pi-spinner' : 'pi pi-times'"
+            label="Rechazar Matrícula"
+            class="p-button-danger"
+            (click)="rejectEnrollment(selectedEnrollmentDetails.id)"
+            [disabled]="loadingReject() === selectedEnrollmentDetails.id || loadingConfirm() === selectedEnrollmentDetails.id"
+            type="button"
+          ></button>
+          
+          <button
+            pButton
+            [icon]="loadingConfirm() === selectedEnrollmentDetails.id ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
+            label="Confirmar Matrícula"
+            class="p-button-success"
+            (click)="confirmEnrollment(selectedEnrollmentDetails.id)"
+            [disabled]="loadingConfirm() === selectedEnrollmentDetails.id || loadingReject() === selectedEnrollmentDetails.id"
+            type="button"
+          ></button>
+        </div>
+      } @else {
+        <!-- Mostrar estado cuando no es PENDING -->
+        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-center">
+          @if (selectedEnrollmentDetails.status === 'CONFIRMED') {
+            <div class="text-center">
+              <i class="pi pi-check-circle text-3xl text-green-500 mb-2"></i>
+              <p class="text-green-600 dark:text-green-400 font-medium">
+                Esta matrícula ya ha sido confirmada
+              </p>
+            </div>
+          }
+          
+          @if (selectedEnrollmentDetails.status === 'CANCELLED') {
+            <div class="text-center">
+              <i class="pi pi-times-circle text-3xl text-red-500 mb-2"></i>
+              <p class="text-red-600 dark:text-red-400 font-medium">
+                Esta matrícula ha sido rechazada
+              </p>
+            </div>
+          }
+          
+          @if (selectedEnrollmentDetails.status === 'DRAFT') {
+            <div class="text-center">
+              <i class="pi pi-clock text-3xl text-blue-500 mb-2"></i>
+              <p class="text-blue-600 dark:text-blue-400 font-medium">
+                Esta matrícula está en proceso de completarse
+              </p>
+            </div>
+          }
+        </div>
+      }
+    } @else {
+      <div class="text-center py-8 text-gray-600 dark:text-gray-400">
+        No se pudieron cargar los detalles de la matrícula.
+      </div>
+    }
+  </div>
+</p-dialog>

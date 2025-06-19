@@ -1,0 +1,311 @@
+<div class="card">  <!-- Header -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="header-text">
+        <h2 class="page-title">Parámetros del Sistema</h2>
+        <p class="page-subtitle">Configura los parámetros globales de la aplicación</p>
+      </div>
+      <div class="header-actions">
+        <p-button 
+          label="Crear Parámetro" 
+          icon="pi pi-plus" 
+          severity="success"
+          size="small"
+          (onClick)="openCreateDialog()">
+        </p-button>
+        <p-button 
+          label="Volver" 
+          icon="pi pi-arrow-left" 
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          (onClick)="goBack()">
+        </p-button>
+      </div>
+    </div>
+  </div>
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="flex justify-content-center align-items-center p-6">
+      <p-progressSpinner strokeWidth="4" animationDuration="1s"></p-progressSpinner>
+      <span class="ml-3 text-600">Cargando parámetros...</span>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading && parameters.length === 0) {
+    <div class="text-center p-6">
+      <i class="pi pi-info-circle text-4xl text-400 mb-3"></i>
+      <h4 class="text-900 mb-2">No hay parámetros disponibles</h4>
+      <p class="text-600 mb-4">Comienza creando tu primer parámetro del sistema</p>
+      <p-button 
+        label="Crear Primer Parámetro" 
+        icon="pi pi-plus" 
+        class="p-button-success"
+        (onClick)="openCreateDialog()">
+      </p-button>
+    </div>
+  }
+  <!-- Parameters Table -->
+  @if (!loading && parameters.length > 0) {
+    <div class="table-card">
+    <p-table 
+      [value]="parameters" 
+      styleClass="p-datatable-striped p-datatable-gridlines"
+      [scrollable]="true"
+      scrollHeight="400px">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 20%">Clave</th>
+          <th style="width: 15%">Tipo</th>
+          <th style="width: 30%">Valor</th>
+          <th style="width: 25%">Descripción</th>
+          <th style="width: 10%" class="text-center">Acciones</th>
+        </tr>
+      </ng-template>      <ng-template pTemplate="body" let-parameter>
+        <tr>
+          <!-- Key Column -->
+          <td>
+            <div>
+              <div class="text-900 font-medium">{{ formatKey(parameter.key) }}</div>
+              <code class="text-xs text-500">{{ parameter.key }}</code>
+            </div>
+          </td>
+
+          <!-- Data Type Column -->
+          <td>
+            <p-tag 
+              [value]="parameter.dataType" 
+              [severity]="getTagSeverity(parameter.dataType)">
+            </p-tag>
+          </td>
+
+          <!-- Value Column -->
+          <td>
+            <div class="parameter-value-container">
+              @if (!isEditing(parameter.key)) {
+                <!-- Display Mode -->
+                <div class="display-value">
+                  <span class="value-text">{{ formatDisplayValue(parameter) }}</span>
+                  @if (parameter.editable) {
+                    <p-button 
+                      icon="pi pi-pencil"
+                      severity="secondary"
+                      [text]="true"
+                      size="small"
+                      (onClick)="startEdit(parameter)"
+                      pTooltip="Editar valor"
+                      tooltipPosition="top">
+                    </p-button>
+                  }
+                </div>
+              } @else {
+                <!-- Edit Mode -->
+                <div class="edit-value">
+                  <!-- Text Input -->
+                  @if (isTextType(parameter.dataType)) {
+                    <input 
+                      pInputText 
+                      [(ngModel)]="editingValues[parameter.key]"
+                      class="w-full p-inputtext-sm"
+                      placeholder="Ingrese el valor"
+                      #textInput>
+                  }
+
+                  <!-- Number Input -->
+                  @if (isNumberType(parameter.dataType)) {
+                    <p-inputNumber 
+                      [(ngModel)]="editingValues[parameter.key]"
+                      [useGrouping]="false"
+                      [maxFractionDigits]="getValueTypeCode(parameter.dataType) === '2' ? 2 : 0"
+                      class="w-full">
+                    </p-inputNumber>
+                  }
+
+                  <!-- Boolean Input -->
+                  @if (isBooleanType(parameter.dataType)) {
+                    <div class="flex align-items-center gap-2">
+                      <p-inputSwitch 
+                        [(ngModel)]="editingValues[parameter.key]"
+                        [trueValue]="'true'"
+                        [falseValue]="'false'">
+                      </p-inputSwitch>
+                      <span class="text-sm">{{ editingValues[parameter.key] === 'true' ? 'Sí' : 'No' }}</span>
+                    </div>
+                  }
+
+                  <!-- Date Input -->
+                  @if (isDateType(parameter.dataType)) {
+                    <p-calendar 
+                      [(ngModel)]="editingValues[parameter.key]"
+                      dateFormat="dd/mm/yy"
+                      [showIcon]="true"
+                      class="w-full">
+                    </p-calendar>
+                  }
+
+                  <!-- Action Buttons -->
+                  <div class="edit-actions mt-2">
+                    <p-button 
+                      icon="pi pi-check"
+                      severity="success"
+                      [text]="true"
+                      size="small"
+                      [loading]="saving[parameter.key]"
+                      (onClick)="saveEdit(parameter)"
+                      pTooltip="Guardar"
+                      tooltipPosition="top">
+                    </p-button>
+                    <p-button 
+                      icon="pi pi-times"
+                      severity="secondary"
+                      [text]="true"
+                      size="small"
+                      (onClick)="cancelEdit(parameter.key)"
+                      pTooltip="Cancelar"
+                      tooltipPosition="top">
+                    </p-button>
+                  </div>
+                </div>
+              }
+
+              <!-- Saving Indicator -->
+              @if (saving[parameter.key]) {
+                <div class="flex align-items-center gap-2 mt-1">
+                  <p-progressSpinner [style]="{width: '16px', height: '16px'}" strokeWidth="4"></p-progressSpinner>
+                  <span class="text-xs text-600">Guardando...</span>
+                </div>
+              }
+            </div>
+          </td>          <!-- Description Column -->
+          <td>
+            <span class="text-600">{{ parameter.description }}</span>
+          </td>
+          
+          <!-- Actions Column -->
+          <td class="text-center">
+            <div class="action-buttons">
+              <p-button 
+                [icon]="parameter.editable ? 'pi pi-unlock' : 'pi pi-lock'"
+                [severity]="parameter.editable ? 'success' : 'warn'"
+                [text]="true"
+                size="small"
+                (onClick)="toggleEditable(parameter)"
+                [pTooltip]="parameter.editable ? 'Bloquear edición' : 'Permitir edición'"
+                tooltipPosition="top">
+              </p-button>
+              
+              <p-button 
+                icon="pi pi-trash" 
+                severity="danger"
+                [text]="true"
+                size="small"
+                (onClick)="deleteParameter(parameter)"
+                pTooltip="Eliminar parámetro"
+                tooltipPosition="top">
+              </p-button>
+            </div>          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    </div>
+  }
+</div>
+
+<!-- Create Parameter Dialog -->
+<p-dialog header="Crear Nuevo Parámetro" [(visible)]="showCreateDialog" [modal]="true" [style]="{ width: '600px' }">
+  <form [formGroup]="createForm">
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Clave del Parámetro *</label>
+      <input
+        type="text"
+        formControlName="key"
+        placeholder="ej: app.timeout"
+        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+      />
+    </div>
+
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tipo de Dato *</label>
+      <p-select 
+        [options]="dataTypeOptions" 
+        formControlName="dataType"
+        optionLabel="label" 
+        optionValue="value"
+        placeholder="Selecciona el tipo de dato"
+        class="w-full">
+      </p-select>
+    </div>
+
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Valor *</label>
+      @switch (createForm.get('dataType')?.value) {
+        @case ('TEXT') {
+          <input
+            type="text"
+            formControlName="value"
+            placeholder="Ingresa el valor de texto"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          />
+        }
+        @case ('NUMBER') {
+          <p-inputNumber
+            formControlName="value"
+            placeholder="Ingresa el valor numérico"
+            [style]="{'width': '100%'}"
+            class="w-full"
+          ></p-inputNumber>
+        }
+        @case ('DECIMAL') {
+          <p-inputNumber
+            formControlName="value"
+            placeholder="Ingresa el valor decimal"
+            [useGrouping]="false"
+            [maxFractionDigits]="2"
+            [style]="{'width': '100%'}"
+            class="w-full"
+          ></p-inputNumber>
+        }
+        @case ('BOOLEAN') {
+          <p-select 
+            [options]="[{ label: 'Verdadero', value: true }, { label: 'Falso', value: false }]"
+            formControlName="value"
+            placeholder="Selecciona verdadero o falso"
+            class="w-full"
+          ></p-select>
+        }
+        @case ('DATE') {
+          <input
+            type="text"
+            formControlName="value"
+            placeholder="YYYY-MM-DD"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          />
+        }
+        @default {
+          <input
+            type="text"
+            formControlName="value"
+            placeholder="Ingresa el valor"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          />
+        }
+      }
+    </div>
+
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Descripción *</label>
+      <textarea
+        formControlName="description"
+        placeholder="Descripción del parámetro"
+        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+      ></textarea>
+    </div>
+  </form>
+
+  <footer class="flex justify-end gap-3 p-3">
+    <button pButton type="button" label="Cancelar" class="p-button-outlined" (click)="closeCreateDialog()"></button>
+    <button pButton type="submit" label="Crear" class="p-button-success" [disabled]="createForm.invalid" (click)="createParameter()"></button>
+  </footer>
+</p-dialog>

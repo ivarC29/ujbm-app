@@ -1,0 +1,21 @@
+.upload-container {
+  ::ng-deep {
+    .p-fileupload-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      border: 2px dashed var(--surface-border);
+      border-radius: 6px;
+      transition: border-color 0.2s;
+      
+      &:hover {
+        border-color: var(--primary-color);
+      }
+    }
+    
+    .p-fileupload-row {
+      display: none;  // Hide the default file list as we show our own
+    }
+  }
+}

@@ -1,0 +1,125 @@
+<p-toast></p-toast>
+
+<div class="teacher-dashboard min-h-screen  ">
+  <!-- Header Section -->
+  <div class="dashboard-header rounded-2xl shadow mb-8 bg-gradient-to-r from-blue-900 to-blue-500 text-white w-full">
+    <div class="header-content flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-8 px-4 py-6 w-full">
+      <div class="flex flex-col flex-1 min-w-0 w-full items-start md:items-start text-left">
+        <h1 class="dashboard-title text-2xl sm:text-3xl md:text-4xl font-bold mb-1 leading-tight text-white whitespace-normal break-words w-full">
+          Mis Secciones de Curso
+        </h1>
+        <div class="teacher-name text-base font-semibold text-white flex items-center gap-2 mt-2 mb-1 w-full">
+          <i class="pi pi-user"></i>
+          <span class="whitespace-normal break-words w-full">{{ courseSections.length > 0 ? courseSections[0].teacherName : '-' }}</span>
+        </div>
+        <p class="dashboard-subtitle text-base text-white mt-1 mb-0 w-full">
+          Gestiona y revisa las secciones asignadas para el período académico actual
+        </p>
+      </div>
+      <div class="header-stats flex flex-row md:flex-col gap-4 md:gap-2 items-center md:items-end w-full md:w-auto justify-start md:justify-end mt-4 md:mt-0">
+        <div class="stat-card bg-blue-800/60 rounded-lg px-4 py-2 flex flex-col items-center min-w-[110px] w-full md:w-auto">
+          <div class="stat-number text-2xl font-bold text-white">{{ courseSections.length }}</div>
+          <div class="stat-label text-xs text-white">Secciones Asignadas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-container">
+      <p-progressSpinner></p-progressSpinner>
+      <p class="loading-text">Cargando secciones...</p>
+    </div>
+  }
+
+  <!-- Course Sections Grid -->
+  @if (!loading && courseSections.length > 0) {
+    <div class="sections-grid grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      @for (section of courseSections; track section.id) {
+        <div class="section-card rounded-xl shadow border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all">
+          <!-- Card Header -->
+          <div class="card-header bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700 p-6 flex justify-between items-start">
+            <div class="course-info">
+              <div class="course-code text-white">{{ section.course.code }}</div>
+              <h3 class="course-name">{{ section.course.name }}</h3>
+              <div class="section-info">
+                <span class="section-badge">Sección {{ section.section }}</span>
+                <span class="period-badge">{{ section.academicPeriodName }}</span>
+              </div>
+            </div>
+            <div class="course-cycle">
+              <div class="cycle-number">{{ section.course.cycle }}</div>
+              <div class="cycle-label">Ciclo</div>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body p-6">
+            <!-- Course Details -->
+            <div class="course-details">
+              <div class="detail-item">
+                <i class="pi pi-star-fill detail-icon"></i>
+                <span class="detail-label">Créditos:</span>
+                <span class="detail-value">{{ section.course.credits }}</span>
+              </div>
+              <div class="detail-item">
+                <i class="pi pi-users detail-icon"></i>
+                <span class="detail-label">Vacantes:</span>
+                <span class="detail-value">{{ section.vacancies }}</span>
+              </div>
+            </div>
+
+            <!-- Schedule Section -->
+            <div class="schedule-section">
+              <h4 class="schedule-title">
+                <i class="pi pi-clock mr-2"></i>
+                Horario de Clases
+              </h4>
+              <div class="schedule-list">
+                @for (schedule of section.weeklySchedules; track schedule.id) {
+                  <div class="schedule-item flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-700 border-l-4 border-indigo-500 rounded-lg">
+                    <div class="day-badge text-white">{{ getDayAbbreviation(schedule.day) }}</div>
+                    <div class="time-info">
+                      <span class="time-range">
+                        {{ formatTime(schedule.startTime) }} - {{ formatTime(schedule.endTime) }}
+                      </span>
+                      <span class="duration">
+                        ({{ calculateDuration(schedule.startTime, schedule.endTime) }})
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer -->
+          <div class="card-footer bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700 p-4 flex justify-end gap-2">
+            <button 
+              pButton 
+              type="button"
+              label="Ver Detalles"
+              icon="pi pi-eye"
+              class="p-button-outlined p-button-sm"
+              (click)="viewSectionDetails(section)"
+            ></button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading && courseSections.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="pi pi-book"></i>
+      </div>
+      <h3 class="empty-title">No tienes secciones asignadas</h3>
+      <p class="empty-message">
+        No se encontraron secciones de curso asignadas para el período académico actual.
+      </p>
+    </div>
+  }
+</div>

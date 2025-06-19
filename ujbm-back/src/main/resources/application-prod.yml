@@ -1,0 +1,55 @@
+server:
+  port: 8080
+spring:
+  config:
+    activate:
+      on-profile: prod
+  docker:
+    compose:
+      enabled: false
+  datasource:
+    url: jdbc:postgresql://${POSTGRESQL_HOST}/${POSTGRESQL_DB}
+    username: ${POSTGRESQL_USER}
+    password: ${POSTGRESQL_PASS}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      expiration-minutes: 60
+      issuer: ujbm-back
+      audience: ujbm-front
+      blacklist-cleanup-interval: 900000
+    refresh-token:
+      expiration-days: 15
+  frontend:
+    base-url: http://localhost
+
+cors:
+  allowed-origins:
+    - http://frontend
+    - http://localhost
+
+apisnet:
+  token: ${APIS_NET_TOKEN}
+  reniec-base-url: https://api.apis.net.pe/v2/reniec/dni
+  sunat-base-url: https://api.apis.net.pe/v2/sunat/ruc

@@ -1,0 +1,404 @@
+<p-dialog
+  [header]="dialogTitle"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '900px', 'max-width': '95vw', 'max-height': '95vh' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [maximizable]="false"
+  styleClass="teacher-dialog bg-transparent"
+  [contentStyle]="{'overflow': 'hidden', 'padding': '0', 'background': 'transparent'}"
+  (onHide)="onHide()"
+>
+  <div class="relative h-[70vh] md:h-[75vh] flex flex-col">
+    <div class="flex-1 overflow-y-auto px-4 md:px-8 pt-6 pb-2 rounded-t-lg">
+      <!-- Loading spinner -->
+      @if (loading) {
+        <div class="flex justify-center items-center py-8">
+          <p-progressSpinner strokeWidth="3" animationDuration="1s"></p-progressSpinner>
+        </div>
+      }
+      
+      <!-- Formulario -->
+      @if (!loading) {
+        <form [formGroup]="teacherForm" class="space-y-8">
+          <!-- Información Personal -->
+          <section>
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <i class="pi pi-user text-blue-600"></i>Información Personal
+            </h3>
+            
+            <!-- Primera fila: Tipo y Número de documento -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Tipo de Documento *</label>
+                <p-select
+                  formControlName="documentType"
+                  [options]="documentTypes()"
+                  optionLabel="label"
+                  optionValue="code"
+                  placeholder="Seleccione tipo"
+                  styleClass="w-full"
+                  [class.ng-invalid]="isInvalid('documentType')"
+                ></p-select>
+                @if (isInvalid('documentType')) {
+                  <small class="text-red-500 mt-2">Tipo requerido</small>
+                }
+              </div>
+              
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Número de Documento *</label>
+                <input
+                  pInputText
+                  formControlName="documentNumber"
+                  placeholder="Ingrese número de documento"
+                  class="w-full"
+                  [class.ng-invalid]="isInvalid('documentNumber')"
+                />
+                <small class="text-blue-600 text-xs mt-1">
+                  <i class="pi pi-info-circle mr-1"></i>
+                  Los datos se completarán automáticamente al ingresar DNI (8 dígitos) o RUC (11 dígitos)
+                </small>
+                @if (isInvalid('documentNumber')) {
+                  <small class="text-red-500 mt-2">{{ getErrorMessage('documentNumber') }}</small>
+                }
+              </div>
+            </div>
+            
+            <!-- Segunda fila: Nombres, Apellidos, Email -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Nombres *</label>
+                <input
+                  pInputText
+                  formControlName="name"
+                  placeholder="Nombres"
+                  class="w-full"
+                  [class.ng-invalid]="isInvalid('name')"
+                />
+                @if (isInvalid('name')) {
+                  <small class="text-red-500 mt-2">{{ getErrorMessage('name') }}</small>
+                }
+              </div>
+              
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Apellidos *</label>
+                <input
+                  pInputText
+                  formControlName="lastname"
+                  placeholder="Apellidos"
+                  class="w-full"
+                  [class.ng-invalid]="isInvalid('lastname')"
+                />
+                @if (isInvalid('lastname')) {
+                  <small class="text-red-500 mt-2">{{ getErrorMessage('lastname') }}</small>
+                }
+              </div>
+              
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Correo Electrónico *</label>
+                <input
+                  pInputText
+                  type="email"
+                  formControlName="email"
+                  placeholder="correo@ejemplo.com"
+                  class="w-full"
+                  [class.ng-invalid]="isInvalid('email')"
+                />
+                @if (isInvalid('email')) {
+                  <small class="text-red-500 mt-2">{{ getErrorMessage('email') }}</small>
+                }
+              </div>
+            </div>
+            
+            <!-- Tercera fila: Teléfono, Género, Fecha de Nacimiento -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Teléfono *</label>
+                <input
+                  pInputText
+                  formControlName="phoneNumber"
+                  placeholder="999888777"
+                  maxlength="9"
+                  class="w-full"
+                  [class.ng-invalid]="isInvalid('phoneNumber')"
+                />
+                @if (isInvalid('phoneNumber')) {
+                  <small class="text-red-500 mt-2">{{ getErrorMessage('phoneNumber') }}</small>
+                }
+              </div>
+              
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Género *</label>
+                <p-select
+                  formControlName="gender"
+                  [options]="genders()"
+                  optionLabel="label"
+                  optionValue="code"
+                  placeholder="Seleccione"
+                  styleClass="w-full"
+                  [class.ng-invalid]="isInvalid('gender')"
+                ></p-select>
+                @if (isInvalid('gender')) {
+                  <small class="text-red-500 mt-2">Género requerido</small>
+                }
+              </div>
+              
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Fecha de Nacimiento *</label>
+                <p-datepicker
+                  formControlName="birthdate"
+                  [showIcon]="true"
+                  dateFormat="dd/mm/yy"
+                  placeholder="dd/mm/aaaa"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  yearRange="1950:2010"
+                  [readonlyInput]="true"
+                  styleClass="w-full"
+                  [class.ng-invalid]="isInvalid('birthdate')"
+                  appendTo="body"
+                ></p-datepicker>
+                @if (isInvalid('birthdate')) {
+                  <small class="text-red-500 mt-2">Fecha requerida</small>
+                }
+              </div>
+            </div>
+          </section>
+
+          <!-- Ubicación -->
+          <section>
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <i class="pi pi-map-marker text-green-600"></i>Ubicación
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Departamento *</label>
+                <p-select
+                  formControlName="department"
+                  [options]="departments()"
+                  optionLabel="label"
+                  optionValue="code"
+                  placeholder="Seleccione departamento"
+                  (onChange)="onDepartmentChange($event)"
+                  styleClass="w-full"
+                  [class.ng-invalid]="isInvalid('department')"
+                ></p-select>
+                @if (isInvalid('department')) {
+                  <small class="text-red-500 mt-2">Departamento requerido</small>
+                }
+              </div>
+              
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Provincia *</label>
+                <p-select
+                  formControlName="province"
+                  [options]="provinces()"
+                  optionLabel="label"
+                  optionValue="code"
+                  placeholder="Seleccione provincia"
+                  (onChange)="onProvinceChange($event)"
+                  styleClass="w-full"
+                  [class.ng-invalid]="isInvalid('province')"
+                ></p-select>
+                @if (isInvalid('province')) {
+                  <small class="text-red-500 mt-2">Provincia requerida</small>
+                }
+              </div>
+              
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Distrito *</label>
+                <p-select
+                  formControlName="district"
+                  [options]="districts()"
+                  optionLabel="label"
+                  optionValue="code"
+                  placeholder="Seleccione distrito"
+                  styleClass="w-full"
+                  [class.ng-invalid]="isInvalid('district')"
+                ></p-select>
+                @if (isInvalid('district')) {
+                  <small class="text-red-500 mt-2">Distrito requerido</small>
+                }
+              </div>
+            </div>
+            
+            <div class="flex flex-col mt-6">
+              <label class="text-sm font-semibold mb-2">Dirección</label>
+              <textarea
+                pInputTextarea
+                formControlName="address"
+                rows="2"
+                placeholder="Ingrese dirección completa"
+                class="w-full"
+                [class.ng-invalid]="isInvalid('address')"
+              ></textarea>
+              @if (isInvalid('address')) {
+                <small class="text-red-500 mt-2">{{ getErrorMessage('address') }}</small>
+              }
+            </div>
+          </section>
+
+          <!-- Información Profesional -->
+          <section>
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <i class="pi pi-briefcase text-purple-600"></i>Información Profesional
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Título Profesional *</label>
+                <input
+                  pInputText
+                  formControlName="professionalTitle"
+                  placeholder="Ej: Licenciado en Educación"
+                  class="w-full"
+                  [class.ng-invalid]="isInvalid('professionalTitle')"
+                />
+                @if (isInvalid('professionalTitle')) {
+                  <small class="text-red-500 mt-2">Título requerido</small>
+                }
+              </div>
+              
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Grado Académico *</label>
+                <input
+                  pInputText
+                  formControlName="academicDegree"
+                  placeholder="Ej: Magister"
+                  class="w-full"
+                  [class.ng-invalid]="isInvalid('academicDegree')"
+                />
+                @if (isInvalid('academicDegree')) {
+                  <small class="text-red-500 mt-2">Grado requerido</small>
+                }
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-2">Fecha de Contratación</label>
+                <p-datepicker
+                  formControlName="hireDate"
+                  [showIcon]="true"
+                  dateFormat="dd/mm/yy"
+                  placeholder="dd/mm/aaaa"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  yearRange="1990:2025"
+                  [readonlyInput]="true"
+                  styleClass="w-full"
+                  appendTo="body"
+                ></p-datepicker>
+              </div>
+              
+              <div class="flex items-center mt-8">
+                <p-checkbox 
+                  formControlName="isFullTime" 
+                  [binary]="true" 
+                  inputId="isFullTime"
+                ></p-checkbox>
+                <label for="isFullTime" class="ml-2 text-sm font-medium">Tiempo completo</label>
+              </div>
+            </div>
+          </section>
+
+          <!-- Información Adicional -->
+          <section>
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <i class="pi pi-heart text-orange-600"></i>Información Adicional
+            </h3>
+            
+            <div class="mb-4">
+              <h4 class="text-sm font-medium mb-3">¿Tiene alguna discapacidad?</h4>
+              <div class="flex gap-6">
+                <div class="flex items-center">
+                  <p-radiobutton 
+                    formControlName="hasDisability"
+                    value="false" 
+                    inputId="disability_no"
+                  ></p-radiobutton>
+                  <label for="disability_no" class="ml-2 text-sm">No</label>
+                </div>
+                
+                <div class="flex items-center">
+                  <p-radiobutton 
+                    formControlName="hasDisability"
+                    value="true" 
+                    inputId="disability_yes"
+                  ></p-radiobutton>
+                  <label for="disability_yes" class="ml-2 text-sm">Sí</label>
+                </div>
+              </div>
+            </div>
+            
+            @if (teacherForm.get('hasDisability')?.value === 'true') {
+              <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="flex flex-col">
+                    <label class="text-sm font-semibold mb-2">Tipo de Discapacidad *</label>
+                    <p-select
+                      formControlName="disabilityType"
+                      [options]="disabilityTypes()"
+                      optionLabel="label"
+                      optionValue="code"
+                      placeholder="Seleccione tipo"
+                      styleClass="w-full"
+                      (onChange)="onDisabilityTypeChange($event)"
+                      [class.ng-invalid]="isInvalid('disabilityType')"
+                    ></p-select>
+                    @if (isInvalid('disabilityType')) {
+                      <small class="text-red-500 mt-2">Tipo requerido</small>
+                    }
+                  </div>
+                  
+                  @if (teacherForm.get('disabilityType')?.value === '12') {
+                    <div class="flex flex-col">
+                      <label class="text-sm font-semibold mb-2">Descripción *</label>
+                      <input
+                        pInputText
+                        formControlName="disabilityDescription"
+                        placeholder="Describa la discapacidad"
+                        class="w-full"
+                        [class.ng-invalid]="isInvalid('disabilityDescription')"
+                      />
+                      @if (isInvalid('disabilityDescription')) {
+                        <small class="text-red-500 mt-2">Descripción requerida</small>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </section>
+        </form>
+      }
+    </div>
+    
+    <!-- Footer fijo -->
+    <div class="sticky bottom-0 left-0 w-full border-t border-gray-200 dark:border-gray-700 z-10 px-4 md:px-8 py-4 flex justify-end gap-3">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        [size]="'large'"
+        (onClick)="cancel()"
+        [disabled]="saving"
+      ></p-button>
+      <p-button
+        [label]="saving ? 'Guardando...' : saveButtonLabel"
+        icon="pi pi-check"
+        severity="success"
+        [size]="'large'"
+        (onClick)="save()"
+        [loading]="saving"
+        [disabled]="teacherForm.invalid || saving"
+      ></p-button>
+    </div>
+  </div>
+</p-dialog>
+
+<p-toast position="top-right"></p-toast>

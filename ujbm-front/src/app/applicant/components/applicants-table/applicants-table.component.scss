@@ -1,0 +1,132 @@
+.applicant-row {
+  td {
+    .truncate-text {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+  }
+}
+
+// Estilo específico para la columna de programa
+.program-column {
+  max-width: 200px !important;
+  width: 200px !important;
+}
+
+// Estilos para hacer el toast de conversión responsivo
+:host ::ng-deep .conversion-toast {
+  .p-toast-message {
+    margin: 0 !important;
+    width: 90vw !important;
+    max-width: 600px !important;
+    min-width: 320px !important;
+    
+    @media (min-width: 769px) {
+      width: 500px !important;
+      max-width: 500px !important;
+    }
+
+    @media (max-width: 768px) {
+      width: 95vw !important;
+      max-width: 95vw !important;
+      min-width: auto !important;
+      margin: 0.5rem !important;
+    }
+
+    @media (max-width: 480px) {
+      width: 98vw !important;
+      max-width: 98vw !important;
+      margin: 0.25rem !important;
+    }
+  }
+
+  .conversion-toast-content {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 1.5rem !important;
+    overflow-y: auto !important;
+    max-height: 85vh !important;
+
+    @media (max-width: 768px) {
+      padding: 1rem !important;
+      max-height: 90vh !important;
+    }
+
+    @media (max-width: 480px) {
+      padding: 0.75rem !important;
+      max-height: 95vh !important;
+    }
+  }
+
+  // Mejorar responsive de los elementos internos
+  .grid {
+    @media (max-width: 480px) {
+      gap: 0.25rem !important;
+    }
+  }
+
+  // Botones responsive
+  .flex.justify-end.gap-3 {
+    @media (max-width: 480px) {
+      flex-direction: column-reverse !important;
+      gap: 0.75rem !important;
+      
+      button {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+    }
+  }
+
+  // Texto más pequeño en móvil
+  h5 {
+    @media (max-width: 480px) {
+      font-size: 1rem !important;
+      line-height: 1.25rem !important;
+    }
+  }
+
+  .text-sm {
+    @media (max-width: 480px) {
+      font-size: 0.8rem !important;
+      line-height: 1rem !important;
+    }
+  }
+
+  .text-xs {
+    @media (max-width: 480px) {
+      font-size: 0.7rem !important;
+      line-height: 0.9rem !important;
+    }
+  }
+}
+
+// Estilos adicionales para asegurar que el toast sea visible en móvil
+:host ::ng-deep .p-toast.p-toast-center {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 10000 !important;
+  
+  @media (max-width: 768px) {
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, -50%) !important;
+    padding: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+
+    .p-toast-message {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      top: auto !important;
+      transform: none !important;
+    }
+  }
+}

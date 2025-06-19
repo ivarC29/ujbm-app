@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Constancia de Ingreso</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #002D62;
+            padding-bottom: 20px;
+        }
+        .logo {
+            height: 80px;
+            width: auto;
+            max-width: 200px;
+            display: block;
+            margin: 0 auto 15px auto;
+            object-fit: contain;
+        }
+        h1 {
+            color: #002D62;
+            margin-bottom: 5px;
+        }
+        .subheader {
+            font-size: 18px;
+            color: #666;
+        }
+        .record-number {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+        .content {
+            margin: 30px 0;
+            text-align: justify;
+        }
+        .student-data {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        .student-data p {
+            margin: 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            margin-top: 50px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            font-size: 14px;
+        }
+        .signature {
+            display: inline-block;
+            margin: 0 20px;
+            width: 45%;
+            text-align: center;
+        }
+        .signature-line {
+            border-top: 1px solid #000;
+            margin-top: 50px;
+            padding-top: 10px;
+        }
+        @media print {
+            body {
+                margin: 10mm 15mm;
+                font-size: 12px;
+            }
+            .header, .footer {
+                page-break-inside: avoid;
+            }
+            .signature {
+                display: inline-block;
+                width: 45%;
+                margin: 0;
+                vertical-align: top;
+            }
+            .footer > div {
+                display: flex;
+                justify-content: space-between;
+            }
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 15mm 20mm 15mm 20mm;
+        }
+    </style>
+</head>
+<body>
+<div class="record-number" th:text="'No. ' + ${recordNumber}">No. CI-2025-1234</div>
+
+<div class="header">
+    <img class="logo" th:src="${logoUrl}" src="/img/logo_universidad.png" alt="Logo Universidad"/>
+    <h1 th:text="${universityName}">Universidad Nacional Autónoma</h1>
+    <div class="subheader" th:text="${faculty}">Facultad de Ingeniería</div>
+</div>
+
+<h2 style="text-align: center;">CONSTANCIA DE INGRESO</h2>
+
+<div class="content">
+    <p>
+        Por medio de la presente, se hace constar que el/la estudiante cuyos datos se detallan a continuación
+        ha formalizado su ingreso a esta institución educativa para el período académico
+        <span th:text="${academicPeriod}">2025-1</span>.
+    </p>
+
+    <div class="student-data">
+        <p><strong>Nombres y Apellidos:</strong> <span th:text="${fullName}">Ana María González Pérez</span></p>
+        <p><strong>Número de documento:</strong> <span th:text="${documentNumber}">12345678</span></p>
+        <p><strong>Carrera:</strong> <span th:text="${program}">Ingeniería en Sistemas</span></p>
+        <p><strong>Fecha de Ingreso:</strong> <span th:text="${enrollmentDate}">15/02/2025</span></p>
+        <p><strong>Modalidad:</strong> <span th:text="${modality}">Presencial</span></p>
+        <p><strong>Campus:</strong> <span th:text="${campus}">Campus Central</span></p>
+    </div>
+
+    <p>
+        Esta constancia se expide a solicitud del/de la interesado/a para los fines que estime convenientes.
+    </p>
+</div>
+
+<div class="footer">
+    <p style="text-align: right">
+        <span th:text="${universityName}">Nombre de la universidad</span>,
+        <span th:text="${issueDate}">17/05/2025</span>
+    </p>
+
+    <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+        <div class="signature" th:if="${signatureSecretary}">
+            <div class="signature-line">Secretario Académico</div>
+        </div>
+        <div class="signature" th:if="${signatureDirector}">
+            <div class="signature-line">Director de Registro</div>
+        </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 40px; font-size: 12px;">
+        Sello Digital: <span th:text="${digitalSeal}">ABC123XYZ456</span>
+    </p>
+</div>
+</body>
+</html>

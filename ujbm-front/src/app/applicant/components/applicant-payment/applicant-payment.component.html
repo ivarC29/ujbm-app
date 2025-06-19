@@ -1,0 +1,331 @@
+<div class="overflow-hidden">
+    <div class="shadow-lg p-6 flex-grow">
+      <div class="search-section">
+        <div class="search-instructions">
+          <h3 class="text-gray-700 font-medium mb-1">
+            Consulta de información
+          </h3>
+          <p class="text-gray-500 text-sm">
+            Ingrese su número de documento para consultar su información de pago
+          </p>
+        </div>
+
+        <div
+          class="search-container  dark:bg-surface-card/80 rounded-xl shadow space-y-6 border border-gray-200 dark:border-surface max-w-lg mx-auto p-6 mb-6"
+        >
+          <!-- Selector de tipo de pago -->
+          <div>
+            <label for="payment-type" class="block text-gray-600 dark:text-gray-300 font-medium  mb-2">
+              Tipo de Pago: <span class="text-red-500">*</span>
+            </label>
+            <p-select
+              id="payment-type"
+              [options]="paymentTypes"
+              [(ngModel)]="selectedPaymentType"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Seleccione el tipo de pago"
+              styleClass="w-full"
+              [showClear]="true"
+            >
+              <ng-template pTemplate="selectedItem">
+                @if (selectedPaymentType) {
+                  <div class="flex items-center gap-2">
+                    <i [class]="getSelectedPaymentTypeIcon()" class="text-primary"></i>
+                    <span>{{ getSelectedPaymentTypeLabel() }}</span>
+                  </div>
+                }
+              </ng-template>
+              <ng-template pTemplate="item" let-option>
+                <div class="flex items-center gap-2">
+                  <i [class]="option.icon" class="text-primary"></i>
+                  <span>{{ option.label }}</span>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+
+          <!-- Campo DNI y botón alineados -->
+          <div class="mb-2">
+            <label for="dni-input" class="block text-gray-600 dark:text-gray-300 font-medium mb-2 ">
+              Número de Documento:
+              <i class="pi pi-id-card"></i>
+            </label>
+            <div class="flex flex-row  gap-2">
+              <span class="p-input-icon-left w-full">
+                <input
+                  id="dni-input"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="applicantId"
+                  placeholder="Ingrese su documento"
+                  class="w-full"
+                />
+              </span>
+              <button
+                pButton
+                label="Buscar"
+                [loading]="loading"
+                [disabled]="loading || !applicantId"
+                (click)="searchApplicant()"
+                class="p-button-primary flex-shrink-0"
+                style="min-width: 120px;"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Información del Postulante -->
+        <div
+          class="surface-card rounded-lg shadow h-full border border-surface"
+        >
+          @if (!applicantData) {
+          <div class="flex flex-col items-center justify-center py-12 h-full">
+            <div class="empty-state-icon mb-4">
+              <i class="pi pi-user-edit text-4xl"></i>
+            </div>
+            <p class="text-secondary text-center">
+              Ingrese su DNI para visualizar su información
+            </p>
+          </div>
+          } @else {
+          <div class="applicant-header surface-section p-5 border-b border-surface rounded-t-lg">
+          <div class="flex items-center flex-wrap">
+            <div class="flex-shrink-0 mr-3 mb-2 sm:mb-0">
+              <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-xl font-bold">
+                  {{ applicantData.fullName.charAt(0)
+                  }}{{ applicantData.fullName.split(" ")[1].charAt(0) || "" }}
+                </div>
+              </div>
+              <div class="flex-grow min-w-0 w-full sm:w-auto">
+                <h2
+                  class="text-primary font-bold mb-1  text-xl leading-tight"
+                >
+                  {{ applicantData.fullName }}
+                </h2>
+                <div class="flex items-center text-sm text-primary">
+                  <i class="pi pi-id-card mr-1"></i>
+                  <span class="truncate"
+                    >DNI: {{ applicantData.documentNumber }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5">
+            <div class="applicant-info">
+              <div class="info-section mb-5">
+                <h3 class="text-primary font-medium mb-3 flex items-center">
+                  <i class="pi pi-user mr-2"></i>
+                  Información Personal
+                </h3>
+                <div class="info-row">
+                  <div class="info-item py-2 border-b border-surface">
+                    <div class="flex justify-between">
+                      <span class="font-medium">Código:</span>
+                      <span>{{ applicantData.code }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-section mb-5">
+                <h3 class="text-primary font-medium mb-3 flex items-center">
+                  <i class="pi pi-book mr-2"></i>
+                  Información Académica
+                </h3>
+                <div class="info-row">
+                  <div class="info-item py-2 border-b border-surface">
+                    <div class="flex justify-between">
+                      <span class="font-medium">Programa:</span>
+                      <span class="text-right">{{
+                        applicantData.programName
+                      }}</span>
+                    </div>
+                  </div>
+                  <div class="info-item py-2 border-b border-surface">
+                    <div class="flex justify-between">
+                      <span class="font-medium">Modalidad:</span>
+                      <span class="text-right">{{
+                        applicantData.enrollmentModeName
+                      }}</span>
+                    </div>
+                  </div>
+                  <div class="info-item py-2 border-b border-surface">
+                    <div class="flex justify-between">
+                      <span class="font-medium">Periodo:</span>
+                      <span class="text-right">{{
+                        applicantData.academicPeriodName
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="payment-amount p-2 surface-hover rounded-lg border border-primary-100"
+              >
+                <div class="flex justify-between items-center">
+                  <div>
+                    <h3 class="text-primary font-semibold">Monto a pagar:</h3>
+                  @if (selectedPaymentType) {
+                    <p class="text-xs text-gray-500 mt-1">{{ getSelectedPaymentTypeLabel() }}</p>
+                  }
+                </div>
+                <div class="text-primary-600 font-bold text-2xl">
+                  S/. {{ applicantData.amount.toFixed(2) }}
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- subida de comprobante -->
+        <div
+          class="surface-card rounded-lg shadow h-full border border-surface"
+        >
+          <div
+            class="upload-header surface-section p-5 border-b border-surface rounded-t-lg"
+          >
+            <h2 class="text-primary text-xl font-bold flex items-center">
+              <i class="pi pi-cloud-upload mr-2"></i>
+              Subir Comprobante de Pago
+            </h2>
+          </div>
+          <div class="p-5">
+            <div
+              class="upload-area-hover border-2 border-dashed border-primary-300 surface-hover rounded-lg cursor-pointer mb-4 transition-all relative overflow-hidden hover-effect"
+              style="min-height: 270px"
+              [class.drag-active]="isDragover"
+              [class.border-solid]="selectedFile"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave()"
+              (drop)="onDrop($event)"
+              (click)="fileInput.click()"
+            >
+              <input
+                type="file"
+                #fileInput
+                hidden
+                accept="application/pdf,image/*"
+                (change)="onFileSelected($event)"
+              />
+
+              @if (!selectedFile) {
+              <div
+                class="flex flex-col items-center justify-center p-6 text-center h-full upload-placeholder"
+              >
+                <i
+                  class="pi pi-cloud-upload text-primary text-5xl mb-4 upload-icon"
+                ></i>
+                <h3 class="text-lg font-medium mb-1">
+                  Arrastre su comprobante aquí
+                </h3>
+                <p class="text-gray-500 mb-3">
+                  o haga clic para seleccionar un archivo
+                </p>
+                <span class="text-xs text-gray-400"
+                  >Formatos aceptados: PDF, JPG, PNG (máx. 5MB)</span
+                >
+
+                <div class="upload-file-types mt-4 flex justify-center gap-3">
+                  <div class="file-type-item">
+                    <i class="pi pi-file-pdf text-red-500 text-xl"></i>
+                    <span class="text-xs">PDF</span>
+                  </div>
+                  <div class="file-type-item">
+                    <i class="pi pi-image text-green-500 text-xl"></i>
+                    <span class="text-xs">JPG</span>
+                  </div>
+                  <div class="file-type-item">
+                    <i class="pi pi-image text-blue-500 text-xl"></i>
+                    <span class="text-xs">PNG</span>
+                  </div>
+                </div>
+              </div>
+              } @else {
+              <div class="p-4 h-full flex flex-col">
+                <div class="flex justify-between items-center mb-3 flex-wrap">
+                  <div class="flex items-center pr-2 max-w-[75%]">
+                    <i class="pi text-primary mr-2 flex-shrink-0" [ngClass]="fileIcon"></i>
+                    <span class="font-semibold truncate">{{
+                      selectedFile.name
+                    }}</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-red-50 rounded-full text-red-500 transition-colors flex-shrink-0 ml-auto"
+                    (click)="removeFile($event)"
+                  >
+                    <i class="pi pi-times"></i>
+                  </button>
+                </div>
+
+                @if (previewUrl) {
+                <div
+                  class="preview-content flex justify-center rounded overflow-hidden mb-2 flex-grow"
+                >
+                  @if (isImage) {
+                  <img
+                    [src]="previewUrl"
+                    alt="Vista previa"
+                    class="max-w-full max-h-[220px] object-contain"
+                  />
+                  } @else {
+                  <div class="pdf-container w-full">
+                    <div class="hidden md:block h-[220px] w-full">
+                      <iframe
+                        [src]="previewUrl"
+                        width="100%"
+                        height="100%"
+                        frameborder="0"
+                        class="pdf-frame"
+                      ></iframe>
+                    </div>
+                    <div class="block md:hidden pdf-mobile-view">
+                      <div
+                        class="flex flex-col items-center justify-center py-3 px-2 text-center bg-gray-50 dark:bg-gray-800 rounded-lg"
+                      >
+                        <i
+                          class="pi pi-file-pdf text-primary text-3xl mb-1"
+                        ></i>
+                        <p class="mb-0.5 text-sm">PDF cargado correctamente</p>
+                        <span
+                          class="text-xs text-gray-600 dark:text-gray-400"
+                          >{{ selectedFile.name }}</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  }
+                </div>
+                }
+              </div>
+              }
+            </div>
+
+            <button
+              pButton
+              [label]="
+                selectedFile ? 'Registrar Comprobante' : 'Subir Comprobante'
+              "
+              icon="pi pi-upload"
+              [loading]="uploading"
+              [disabled]="!selectedFile || !applicantData || uploading"
+              (click)="uploadReceipt()"
+              [ngClass]="selectedFile ? 'p-button-success' : 'p-button-primary'"
+              [loading]="uploading"
+              class="w-full py-2 text-base"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<p-toast></p-toast>

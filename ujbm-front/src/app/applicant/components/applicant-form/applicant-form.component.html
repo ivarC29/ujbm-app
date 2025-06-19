@@ -1,0 +1,397 @@
+<div [formGroup]="form" class="applicant-form">
+  <div class="grid-layout">
+    
+    <!-- LEFT COLUMN: Personal Details & Documents -->
+    <div class="form-column">
+      <!-- PERSONAL DATA SECTION -->
+      <section class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="pi pi-user"></i>
+          </div>
+          <h2 class="section-title">Datos Personales</h2>
+        </div>
+
+        <div class="section-content">
+          <div class="form-grid">
+            <app-select-input
+              controlName="documentType"
+              [form]="form"
+              [options]="documentTypes()"
+              label="Tipo de documento"
+              optionLabel="label"
+              optionValue="code"
+              placeholder="Selecciona un tipo"
+            />
+            <app-text-input 
+              controlName="documentNumber" 
+              [form]="form" 
+              label="Número de documento" 
+            />
+            <app-text-input 
+              controlName="name" 
+              [form]="form" 
+              label="Nombres" 
+            />
+            <app-text-input 
+              controlName="lastname" 
+              [form]="form" 
+              label="Apellidos" 
+            />
+            <app-text-input 
+              controlName="email" 
+              [form]="form" 
+              label="Correo electrónico" 
+              class="col-span-1"
+            /> 
+            <app-text-input 
+              controlName="phoneNumber" 
+              [form]="form" 
+              label="Teléfono" 
+            />
+            <app-date-input 
+              controlName="birthdate" 
+              [form]="form" 
+              label="Fecha de nacimiento" 
+            />
+            <app-select-input
+              controlName="sex"
+              [form]="form"
+              [options]="sexOptions()"
+              label="Sexo"
+              optionLabel="label"
+              optionValue="code"
+              placeholder="Selecciona"
+            />
+            <app-select-input
+              controlName="program"
+              [form]="form"
+              [options]="programs()"
+              label="Carrera"
+              optionLabel="label"
+              optionValue="code"
+              placeholder="Selecciona una carrera"
+              class="col-span-2 carrera-select"
+              appendTo="body"
+            />
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-header address">
+              <i class="pi pi-map-marker"></i>
+              <span class="subsection-title">Dirección</span>
+            </div>
+            <div class="form-grid-three">
+              <app-select-input
+                controlName="department"
+                [form]="form"
+                [options]="departments()"
+                label="Departamento"
+                optionLabel="name"
+                optionValue="code"
+                placeholder="Selecciona"
+              />
+              <app-select-input
+                controlName="province"
+                [form]="form"
+                [options]="getProvinces(form.get('department')?.value)"
+                label="Provincia"
+                optionLabel="name"
+                optionValue="code"
+                placeholder="Selecciona"
+              />
+              <app-select-input
+                controlName="district"
+                [form]="form"
+                [options]="getDistricts(form.get('province')?.value)"
+                label="Distrito"
+                optionLabel="name"
+                optionValue="code"
+                placeholder="Selecciona"
+              />
+              <app-text-input
+                controlName="address"
+                [form]="form"
+                label="Dirección"
+                placeholder="Ingresa la dirección específica"
+                class="col-span-3"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- DOCUMENTATION REQUIRED SECTION -->
+      <section class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="pi pi-file"></i>
+          </div>
+          <h2 class="section-title">Documentación Requerida</h2>
+        </div>
+        
+        <div class="section-content">
+          <div class="content-container">
+            @switch (selectedMode) {
+              @case ('01') {
+                <shared-file-upload-group
+                  [form]="form"
+                  [files]="[
+                    { controlName: 'dniFile', label: 'Documento de Identidad' },
+                    { controlName: 'studyCertificateFile', label: 'Certificado de Estudios' },
+                    { controlName: 'photoFile', label: 'Foto carnet' }
+                  ]"
+                  class="file-upload-grid"
+                />
+              }
+              @case ('02') {
+                <shared-file-upload-group
+                  [form]="form"
+                  [files]="[
+                    { controlName: 'dniFile', label: 'Documento de Identidad' },
+                    { controlName: 'studyCertificateFile', label: 'Certificado de 5to secundaria' },
+                    { controlName: 'photoFile', label: 'Foto carnet' }
+                  ]"
+                  class="file-upload-grid"
+                />
+              }
+              @case ('03') {
+                <shared-file-upload-group
+                  [form]="form"
+                  [files]="[
+                    { controlName: 'dniFile', label: 'Documento de Identidad' },
+                    { controlName: 'studyCertificateFile', label: 'Certificado de exoneración' },
+                    { controlName: 'photoFile', label: 'Foto carnet' }
+                  ]"
+                  class="file-upload-grid"
+                />
+              }
+              @case ('04') {
+                <shared-file-upload-group
+                  [form]="form"
+                  [files]="[
+                    { controlName: 'dniFile', label: 'Documento de Identidad' },
+                    { controlName: 'studyCertificateFile', label: 'Certificado de estudios' },
+                    { controlName: 'photoFile', label: 'Foto carnet' },
+                    { controlName: 'syllabusFile', label: 'Sílabos' }
+                  ]"
+                  class="file-upload-grid"
+                />
+              }
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- TERMS AND CONDITIONS SECTION -->
+    </div>
+    
+    <!-- RIGHT COLUMN: School Information & Additional Info -->
+    <div class="form-column">
+      <!-- SCHOOL INFORMATION SECTION -->
+      <section class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="pi pi-book"></i>
+          </div>
+          <h2 class="section-title">Escuela de Procedencia</h2>
+        </div>
+      
+        <div class="section-content">
+          <div class="form-grid-three">
+            <app-select-input
+              controlName="schoolType"
+              [form]="form"
+              [options]="schoolTypes()"
+              label="Tipo de colegio"
+              optionLabel="label"
+              optionValue="code"
+              placeholder="Selecciona"
+            />
+            <app-text-input
+              controlName="graduationYear"
+              [form]="form"
+              label="Año de egreso"
+              type="number"
+            />
+            <app-text-input
+              controlName="schoolName"
+              [form]="form"
+              label="Nombre del colegio"
+            />
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-header address">
+              <i class="pi pi-map-marker"></i>
+              <span class="subsection-title">Ubicación del Colegio</span>
+            </div>
+            <div class="form-grid-three">
+              <app-select-input
+                controlName="schoolDepartment"
+                [form]="form"
+                [options]="departments()"
+                label="Departamento"
+                optionLabel="name"
+                optionValue="code"
+                placeholder="Selecciona"
+              />
+              <app-select-input
+                controlName="schoolProvince"
+                [form]="form"
+                [options]="getSchoolProvinces(form.get('schoolDepartment')?.value)"
+                label="Provincia"
+                optionLabel="name"
+                optionValue="code"
+                placeholder="Selecciona"
+              />
+              <app-select-input
+                controlName="schoolDistrict"
+                [form]="form"
+                [options]="getSchoolDistricts(form.get('schoolProvince')?.value)" 
+                label="Distrito"
+                optionLabel="name"
+                optionValue="code"
+                placeholder="Selecciona"
+              />
+            </div>
+          </div>
+          
+          <div class="subsection">
+            <div class="subsection-header referral">
+              <i class="pi pi-comment"></i>
+              <span class="subsection-title">Información de Contacto</span>
+            </div>
+            <div class="form-single">
+              <app-select-input
+                controlName="referralSource"
+                [form]="form"
+                [options]="referralSources()"
+                label="¿Por qué medio se enteró de la Universidad?"
+                optionLabel="label"
+                optionValue="code"
+                placeholder="Selecciona"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- ADDITIONAL INFORMATION SECTION -->
+      <section class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="pi pi-info-circle"></i>
+          </div>
+          <h2 class="section-title">Información Adicional</h2>
+        </div>
+        
+        <div class="section-content">
+          <div class="subsection">
+            <div class="subsection-header disability">
+              <i class="pi pi-heart"></i>
+              <span class="subsection-title">Información de Discapacidad</span>
+            </div>
+            <div class="content-container">
+              <h3 class="content-title">¿Tiene alguna discapacidad?</h3>
+              <app-shared-radio-group
+                [form]="form"
+                controlName="hasDisability"
+                [options]="[
+                  { value: 'true', label: 'Sí', inputId: 'disabilityYes' },
+                  { value: 'false', label: 'No', inputId: 'disabilityNo' }
+                ]"
+              ></app-shared-radio-group>
+
+              @if (form.get('hasDisability')?.value === 'true') {
+                <div class="conditional-section">
+                  <app-select-input
+                    controlName="disabilityType"
+                    [form]="form"
+                    [options]="disabilityTypes()"
+                    label="Tipo de discapacidad"
+                    optionLabel="label"
+                    optionValue="code"
+                    placeholder="Seleccione el tipo"
+                    appendTo="body"
+                    class="disability-select"
+                  />
+
+                  @if (form.get('disabilityType')?.value === '12') {
+                    <app-text-input
+                      controlName="otherDisabilityDescription"
+                      [form]="form"
+                      label="Especifique la discapacidad"
+                      placeholder="Describa la discapacidad"
+                      class="disability-description"
+                    />
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          
+          <!-- Guardian fields (conditional) -->
+          @if (showGuardianForm) {
+            <div class="subsection">
+              <div class="subsection-header guardian">
+                <i class="pi pi-users"></i>
+                <span class="subsection-title">Datos del Apoderado</span>
+              </div>
+              <div class="content-container">
+                <p class="content-description">Por ser menor de edad, es necesario completar los datos del apoderado</p>
+                
+                <div class="form-grid">
+                  <app-select-input
+                    controlName="guardianDocumentType"
+                    [form]="form"
+                    [options]="documentTypes()"
+                    label="Tipo de documento"
+                    optionLabel="label"
+                    optionValue="code"
+                    placeholder="Selecciona"
+                  />
+                  <app-text-input 
+                    controlName="guardianDocumentNumber" 
+                    [form]="form" 
+                    label="Número de documento" 
+                  />
+                  <app-text-input 
+                    controlName="guardianName" 
+                    [form]="form" 
+                    label="Nombres" 
+                  />
+                  <app-text-input 
+                    controlName="guardianLastname" 
+                    [form]="form" 
+                    label="Apellidos" 
+                  />
+                  <app-select-input
+                    controlName="guardianRelationship"
+                    [form]="form"
+                    [options]="relationshipTypes()"
+                    label="Parentesco"
+                    optionLabel="label"
+                    optionValue="code"
+                    placeholder="Selecciona"
+                  />
+                  <app-text-input 
+                    controlName="guardianPhone" 
+                    [form]="form" 
+                    label="Teléfono" 
+                  />
+                  <app-text-input 
+                    controlName="guardianEmail" 
+                    [form]="form" 
+                    label="Correo electrónico"
+                    class="col-span-1"
+                  />
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

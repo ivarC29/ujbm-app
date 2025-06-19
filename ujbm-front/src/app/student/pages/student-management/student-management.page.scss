@@ -1,0 +1,31 @@
+.card {
+  background: var(--surface-card);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--card-shadow);
+}
+
+// Dark mode adjustments
+.dark .card {
+  background: #1f2937;
+  border: 1px solid #374151;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .card {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+// Student management specific styles
+:host {
+  display: block;
+  min-height: 100vh;
+  
+  .card {
+    min-height: calc(100vh - 2rem);
+  }
+}

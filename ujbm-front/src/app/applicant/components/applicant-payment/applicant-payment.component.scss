@@ -1,0 +1,278 @@
+.payment-page {
+  background-color: #f8fafc;
+}
+
+.search-section {
+  margin-bottom: 2rem;
+}
+
+.search-instructions {
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+
+.search-input-wrapper {
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.search-button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+//hover en área de arrastre
+.upload-area-hover {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: var(--primary-500);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  }
+  
+  .upload-icon {
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+  
+  &:hover .upload-icon {
+    transform: translateY(-5px);
+    color: var(--primary-600);
+  }
+  
+  .upload-placeholder {
+    transition: all 0.3s ease;
+  }
+  
+  &:hover .upload-placeholder {
+    transform: scale(1.02);
+  }
+  
+  // Icono animado 
+  &.drag-active {
+    background-color: var(--primary-50);
+    border-color: var(--primary-500);
+    transform: scale(1.01);
+    box-shadow: 0 8px 20px rgba(33, 150, 243, 0.15);
+    
+    .upload-icon {
+      transform: translateY(-8px);
+      color: var(--primary-700);
+    }
+  }
+}
+
+// tipos de archivos
+.file-type-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.7);
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+
+.empty-state-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary-50), var(--surface-100));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+ 
+.header-gradient {
+  background: linear-gradient(135deg, var(--primary-800) 0%, var(--primary-600) 100%);
+  position: relative;
+  border-radius: 0.5rem 0.5rem 0 0;
+  
+  h1, p {
+    position: relative;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+}
+
+//  modo oscuro
+:host ::ng-deep {
+  .card {
+    background-color: var(--surface-card);
+    color: var(--text-color);
+    border-radius: 0;
+  }
+  
+  .text-gray-700 {
+    color: var(--text-color);
+  }
+  
+  .text-gray-500, .text-gray-600, .text-gray-400 {
+    color: var(--text-secondary-color);
+  }
+  
+  .bg-gray-50 {
+    background-color: var(--surface-section);
+  }
+  
+  .border-gray-100 {
+    border-color: var(--surface-border);
+  }
+  
+  .shadow {
+    box-shadow: var(--card-shadow);
+  }
+  
+  .upload-area {
+    background-color: var(--surface-hover);
+    border-color: var(--primary-400);
+    
+    &.drag-active {
+      background-color: var(--primary-50);
+      border-color: var(--primary-500);
+    }
+  }
+  
+  button.bg-gray-100 {
+    background-color: var(--surface-hover);
+    
+    &:hover {
+      background-color: var(--red-50);
+    }
+  }
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary-color);
+  z-index: 2;
+  
+  i {
+    font-size: 0.875rem;
+  }
+}
+
+// visor de PDF
+.pdf-container {
+  position: relative;
+  min-height: 120px;
+}
+
+.pdf-frame {
+  border-radius: 4px;
+  background-color: var(--surface-ground);
+}
+
+.pdf-mobile-view {
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  
+  .pi-file-pdf {
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+  }
+}
+
+
+@media screen and (max-width: 576px) {
+  .search-container {
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  .search-input-wrapper {
+    flex-direction: column;
+    
+    .search-button {
+      border-radius: 4px;
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+.search-container {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .search-container {
+    padding: 1.5rem;
+  }
+  
+  .flex.gap-2 {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .p-inputtext {
+    background-color: var(--surface-overlay);
+    color: var(--text-color);
+    
+    &::placeholder {
+      color: var(--text-color-secondary);
+    }
+  }
+  
+  .p-input-icon-left {
+    i {
+      color: var(--text-color-secondary);
+    }
+  }
+}
+
+.border-surface {
+  border-color: var(--surface-border);
+}
+
+
+.text-secondary {
+  color: var(--text-secondary-color);
+}
+
+
+.preview-content {
+  background-color: var(--surface-ground);
+}
+
+
+:host ::ng-deep {
+  .surface-hover {
+    background-color: var(--surface-hover) !important;
+  }
+  
+  .pdf-mobile-view {
+    background-color: var(--surface-section) !important;
+    
+    .text-gray-600 {
+      color: var(--text-secondary-color) !important;
+    }
+  }
+  
+  .file-type-item {
+    background-color: var(--surface-hover);
+  }
+}
+

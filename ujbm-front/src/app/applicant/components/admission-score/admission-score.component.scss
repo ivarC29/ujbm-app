@@ -1,0 +1,36 @@
+:host {
+  display: block;
+}
+
+// Animaciones suaves
+.ng-enter {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Efecto hover para las tarjetas
+.bg-white, .dark .bg-gray-800 {
+  transition: all 0.3s ease;
+}
+
+.bg-white:hover, .dark .bg-gray-800:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+// Responsivo
+@media (max-width: 640px) {
+  .grid-cols-1.md\\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}

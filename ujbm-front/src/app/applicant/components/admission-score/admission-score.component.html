@@ -1,0 +1,183 @@
+<p-toast></p-toast>
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
+  <div class="max-w-2xl mx-auto">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full mb-4">
+        <i class="pi pi-chart-line text-white text-3xl"></i>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-800 dark:text-white mb-2">
+        Resultados del Examen de Admisión
+      </h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300">
+        Consulta aquí si aprobaste el examen de admisión
+      </p>
+    </div>
+
+    <!-- Form Card -->
+    @if (!showResult()) {
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-6">
+        <div class="space-y-6">
+          
+          <!-- Document Input -->
+          <div>
+            <label class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Número de Documento de Identidad
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="dni"
+              placeholder="Ingrese su DNI o documento de identidad"
+              maxlength="12"
+              class="w-full text-lg p-4 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-200 transition-all duration-300 bg-white text-gray-900 placeholder-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-300 dark:focus:border-blue-400"
+              (keyup.enter)="checkScore()"
+            />
+          </div>
+
+          <!-- Check Button -->
+          <button
+            pButton
+            type="button"
+            label="Consultar Resultado"
+            icon="pi pi-search"
+            class="p-button-lg w-full bg-gradient-to-r from-blue-600 to-indigo-600 border-0 rounded-xl py-4 text-lg font-bold transition-all duration-300 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-[1.02] hover:shadow-xl"
+            [loading]="loading()"
+            [disabled]="!isDocumentValid()"
+            (click)="checkScore()"
+          >
+          </button>
+
+          <!-- Info -->
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div class="flex items-start">
+              <i class="pi pi-info-circle text-blue-600 dark:text-blue-400 text-lg mt-0.5 mr-3"></i>
+              <div>
+                <p class="text-blue-800 dark:text-blue-200 text-sm">
+                  <strong>Importante:</strong> Los resultados están disponibles según el horario establecido por la institución. 
+                  Si aprobaste, revisa tu correo electrónico registrado para más información sobre el proceso de matrícula.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Results Card -->
+    @if (showResult() && scoreResult()) {
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        
+        <!-- Result Header -->
+        <div [class]="scoreResult()?.approved ? 
+          'bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6' : 
+          'bg-gradient-to-r from-red-500 to-pink-600 text-white p-6'">
+          
+          <div class="flex items-center justify-center mb-4">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+              @if (scoreResult()?.approved) {
+                <i class="pi pi-check text-3xl"></i>
+              } @else {
+                <i class="pi pi-times text-3xl"></i>
+              }
+            </div>
+          </div>
+          
+          <h2 class="text-2xl font-bold text-center mb-2">
+            @if (scoreResult()?.approved) {
+              ¡Felicidades! Has Aprobado
+            } @else {
+              Resultado del Examen
+            }
+          </h2>
+          
+          <p class="text-center text-lg opacity-90">
+            {{ scoreResult()?.message }}
+          </p>
+        </div>
+
+        <!-- Result Details -->
+        @if (scoreResult()?.code) {
+          <div class="p-6 space-y-4">
+            
+            <!-- Applicant Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  Código de Postulante
+                </label>
+                <p class="text-lg font-semibold text-gray-900 dark:text-white">
+                  {{ scoreResult()?.code }}
+                </p>
+              </div>
+              
+              <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  Nombre Completo
+                </label>
+                <p class="text-lg font-semibold text-gray-900 dark:text-white">
+                  {{ scoreResult()?.fullName }}
+                </p>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                Programa
+              </label>
+              <p class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ scoreResult()?.programName }}
+              </p>
+            </div>
+
+            @if (scoreResult()?.score !== null) {
+              <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  Puntaje Obtenido
+                </label>
+                <p [class]="scoreResult()?.approved ? 
+                  'text-2xl font-bold text-green-600 dark:text-green-400' : 
+                  'text-2xl font-bold text-red-600 dark:text-red-400'">
+                  {{ scoreResult()?.score }} puntos
+                </p>
+              </div>
+            }
+
+            <!-- Next Steps -->
+            @if (scoreResult()?.approved) {
+              <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                <div class="flex items-start">
+                  <i class="pi pi-envelope text-green-600 dark:text-green-400 text-lg mt-0.5 mr-3"></i>
+                  <div>
+                    <h3 class="text-green-800 dark:text-green-200 font-semibold mb-2">
+                      Próximos Pasos
+                    </h3>
+                    <p class="text-green-700 dark:text-green-300 text-sm">
+                      Revisa tu correo electrónico registrado para recibir las instrucciones 
+                      sobre el proceso de matrícula y documentos requeridos.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+          <button
+            pButton
+            type="button"
+            label="Consultar Otro Documento"
+            icon="pi pi-refresh"
+            class="p-button-outlined w-full"
+            (click)="resetForm()"
+          >
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

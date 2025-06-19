@@ -1,0 +1,19 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; 
+}
+
+app-configurator,
+app-page-header,
+app-footer {
+  flex-shrink: 0; 
+}
+
+app-applicant-payment-receipt {
+  flex-grow: 1;
+}
+
+app-footer {
+  margin-top: auto; 
+}

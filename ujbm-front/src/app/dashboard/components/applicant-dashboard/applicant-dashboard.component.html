@@ -1,0 +1,210 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 flex flex-col gap-4 md:gap-6">
+  <!-- Header -->
+  <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 p-4 border-b border-gray-200 dark:border-gray-700">
+    <div class="flex-1">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+        <i class="pi pi-chart-bar text-blue-600 text-xl md:text-2xl"></i>
+        Dashboard de Postulantes
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-1 text-sm md:text-base">
+        Análisis integral de datos de postulación
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <p-button 
+        icon="pi pi-refresh"
+        label="Actualizar"
+        [loading]="loading()"
+        (onClick)="refreshData()"
+        severity="secondary"
+        size="small"
+        class="whitespace-nowrap">
+      </p-button>
+    </div>
+  </div>
+
+  <!-- Filters Panel -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 md:p-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <p-select 
+        [options]="genderOptions()" 
+        optionLabel="label" 
+        optionValue="code" 
+        placeholder="Género" 
+        [(ngModel)]="filters().gender" 
+        (onChange)="onFilterChange()" 
+        [showClear]="true" 
+        class="w-full"/>
+
+      <p-select
+        [options]="applicantTypeOptions()" 
+        optionLabel="label" 
+        optionValue="code" 
+        placeholder="Tipo de postulante" 
+        [(ngModel)]="filters().applicantType" 
+        (onChange)="onFilterChange()" 
+        [showClear]="true" 
+        class="w-full"/>
+
+      <p-select
+        [options]="programOptions()" 
+        optionLabel="name" 
+        optionValue="id" 
+        placeholder="Programa académico" 
+        [(ngModel)]="filters().programId" 
+        (onChange)="onFilterChange()" 
+        [showClear]="true" 
+        class="w-full"/>
+
+      <p-select
+        [options]="departmentOptions()" 
+        optionLabel="name" 
+        optionValue="code" 
+        placeholder="Departamento" 
+        [(ngModel)]="filters().departmentCode" 
+        (onChange)="onFilterChange()" 
+        [showClear]="true" 
+        class="w-full"/>
+
+      <p-select
+        [options]="schoolTypeOptions()" 
+        optionLabel="label" 
+        optionValue="code" 
+        placeholder="Tipo de colegio" 
+        [(ngModel)]="filters().schoolType" 
+        (onChange)="onFilterChange()" 
+        [showClear]="true" 
+        class="w-full"/>
+
+      <p-select
+        [options]="academicPeriodOptions()" 
+        optionLabel="name" 
+        optionValue="name" 
+        placeholder="Periodo académico" 
+        [(ngModel)]="filters().academicPeriod" 
+        (onChange)="onFilterChange()" 
+        [showClear]="true" 
+        class="w-full"/>
+
+      <!-- Age Filter -->
+      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:col-span-2 lg:col-span-1">
+        <span class="text-gray-700 dark:text-gray-300 text-sm font-medium whitespace-nowrap">Edad:</span>
+        <div class="flex items-center gap-2 flex-1">
+          <p-inputNumber 
+            [(ngModel)]="ageFrom" 
+            (onInput)="onAgeFilterChange()" 
+            [min]="1" 
+            [max]="120" 
+            placeholder="Desde" 
+            [allowEmpty]="true"
+            class="flex-1 min-w-0 max-w-20 sm:max-w-none"/>
+          <span class="text-gray-500 dark:text-gray-400 flex-shrink-0">-</span>
+          <p-inputNumber 
+            [(ngModel)]="ageTo" 
+            (onInput)="onAgeFilterChange()" 
+            [min]="1" 
+            [max]="120" 
+            placeholder="Hasta" 
+            [allowEmpty]="true"
+            class="flex-1 min-w-0 max-w-20 sm:max-w-none"/>
+        </div>
+      </div>
+
+      <!-- Clear Filters Button -->
+      <div class="sm:col-span-2 lg:col-span-1 xl:col-span-4 lg:xl:col-span-1">
+        <p-button 
+          icon="pi pi-filter-slash" 
+          label="Limpiar filtros" 
+          severity="secondary" 
+          (onClick)="clearFilters()" 
+          class="w-full lg:w-auto"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 p-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 md:w-15 md:h-15 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i class="pi pi-users text-xl md:text-2xl"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            {{ totalApplicants() }}
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">
+            Total Postulantes
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 p-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 md:w-15 md:h-15 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i class="pi pi-calendar text-xl md:text-2xl"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            {{ chartConfigs.length }}
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">
+            Métricas Disponibles
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 p-6 md:col-span-2 xl:col-span-1">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 md:w-15 md:h-15 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i class="pi pi-clock text-xl md:text-2xl"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">
+            {{ lastUpdated() | date:'short' }}
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">
+            Última Actualización
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-16 px-8 gap-4">
+      <p-progressSpinner styleClass="w-12 h-12" strokeWidth="3"></p-progressSpinner>
+      <p class="text-gray-600 dark:text-gray-400 font-medium">
+        Cargando datos del dashboard...
+      </p>
+    </div>
+  }
+
+  <!-- Charts Grid -->
+  @if (!loading()) {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 flex-1">
+      @for (config of chartConfigs; track config.value) {
+        <div class="h-full min-h-[350px] md:min-h-[400px]">
+          <app-chart-card
+            [title]="config.label"
+            [icon]="config.icon"
+            [data]="getChartData(config.value)"
+            [chartType]="config.chartType"
+            class="h-full">
+          </app-chart-card>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Footer -->
+  <div class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+    <p class="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-sm">
+      <i class="pi pi-info-circle text-blue-600"></i>
+      Los datos se actualizan automáticamente desde el sistema de postulaciones
+    </p>
+  </div>
+</div>

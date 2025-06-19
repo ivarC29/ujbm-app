@@ -1,0 +1,293 @@
+<p-dialog
+  [header]="studentToEdit ? 'Editar Estudiante' : 'Nuevo Estudiante'"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '800px', 'max-width': '95vw', 'max-height': '95vh' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [maximizable]="false"
+  styleClass="student-dialog bg-transparent"
+  [contentStyle]="{'overflow': 'hidden', 'padding': '0', 'background': 'transparent'}"
+  (onHide)="onHide()"
+>
+  <div class="relative h-[70vh] md:h-[75vh] flex flex-col">
+    <div class="flex-1 overflow-y-auto px-4 md:px-8 pt-6 pb-2  rounded-t-lg">
+      <!-- Loading spinner -->
+      @if (loading()) {
+        <div class="flex justify-center items-center py-8">
+          <p-progressSpinner strokeWidth="3" animationDuration="1s"></p-progressSpinner>
+        </div>
+      }
+      <!-- Formulario -->
+      @if (!loading()) {
+        <form [formGroup]="studentForm" class="space-y-8">
+          @if (errorMessage()) {
+            <p-message severity="error" [text]="errorMessage()" styleClass="w-full mb-4"></p-message>
+          }
+          <!-- Fila 1: Fecha de Inscripción y Programa -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col">
+              <label for="enrollmentDate" class="text-sm font-semibold mb-2">Fecha de Inscripción *</label>
+              <p-datepicker id="enrollmentDate" formControlName="enrollmentDate" [showIcon]="true" dateFormat="dd/mm/yy" placeholder="Seleccionar fecha..." class="w-full" [class.ng-invalid]="isFieldInvalid('enrollmentDate')"></p-datepicker>
+              @if (isFieldInvalid('enrollmentDate')) {
+                <small class="text-red-500 mt-2">{{ getFieldError('enrollmentDate') }}</small>
+              }
+            </div>
+            <div class="flex flex-col">
+              <label for="programId" class="text-sm font-semibold mb-2">Programa Académico *</label>
+              <app-select-input
+                controlName="programId"
+                [form]="studentForm"
+                [options]="programs()"
+                label="Programa"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Seleccionar programa..."
+                class="w-full"
+                appendTo="body"
+                [filter]="true"
+                filterPlaceholder="Buscar programa..."
+              />
+              @if (isFieldInvalid('programId')) {
+                <small class="text-red-500 mt-2">{{ getFieldError('programId') }}</small>
+              }
+            </div>
+
+            <app-select-input
+              label="Ciclo"
+              controlName="cycle"
+              [form]="studentForm"
+              [options]="cycleOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Seleccionar ciclo"
+              appendTo="body"
+              errorMessage="El ciclo es requerido"
+            ></app-select-input>
+          </div>
+          <!-- Datos personales -->
+          <section>
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="pi pi-user text-blue-600"></i>Datos Personales</h3>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <app-select-input
+                controlName="documentType"
+                [form]="studentForm"
+                [options]="documentTypes()"
+                label="Tipo de documento *"
+                optionLabel="label"
+                optionValue="code"
+                placeholder="Selecciona un tipo"
+              />
+              <app-text-input controlName="documentNumber" [form]="studentForm" label="Número de documento *" />
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <app-text-input controlName="name" [form]="studentForm" label="Nombres *" />
+              <app-text-input controlName="lastname" [form]="studentForm" label="Apellidos *" />
+              <app-text-input controlName="email" [form]="studentForm" label="Correo electrónico *" />
+            </div>
+           
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <app-text-input controlName="phoneNumber" [form]="studentForm" label="Teléfono *" />
+              <app-select-input
+                controlName="gender"
+                [form]="studentForm"
+                [options]="genders()"
+                label="Género *"
+                optionLabel="label"
+                optionValue="code"
+                placeholder="Selecciona"
+              />
+              <app-date-input controlName="birthdate" [form]="studentForm" label="Fecha de nacimiento *" />
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <app-select-input
+                controlName="enrollmentMode"
+                [form]="studentForm"
+                [options]="enrollmentModes() || []"
+                label="Modalidad de inscripción *"
+                optionLabel="label"
+                optionValue="code"
+                placeholder="Selecciona"
+              />
+            </div>
+            <!-- Dirección y Ubigeo -->
+            <div class="mt-6 mb-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <app-select-input
+                  controlName="department"
+                  [form]="studentForm"
+                  [options]="departments()"
+                  label="Departamento"
+                  optionLabel="name"
+                  optionValue="code"
+                  placeholder="Selecciona"
+                />
+                <app-select-input
+                  controlName="province"
+                  [form]="studentForm"
+                  [options]="provinces()"
+                  label="Provincia"
+                  optionLabel="name"
+                  optionValue="code"
+                  placeholder="Selecciona"
+                />
+                <app-select-input
+                  controlName="district"
+                  [form]="studentForm"
+                  [options]="districts()"
+                  label="Distrito"
+                  optionLabel="name"
+                  optionValue="code"
+                  placeholder="Selecciona"
+                />
+              </div>
+              <app-text-input controlName="address" [form]="studentForm" label="Dirección" class="mt-4" />
+            </div>
+          </section>
+          <!-- Apoderado -->
+          <section>
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <i class="pi pi-users text-green-600"></i>Datos del Apoderado
+            </h3>
+            
+            <!-- Radio para mostrar/ocultar apoderado -->
+            <div class="mb-4">
+              <h4 class="text-sm font-medium mb-3">¿Registrar datos de apoderado?</h4>
+              <app-shared-radio-group
+                [form]="studentForm"
+                controlName="hasGuardian"
+                [options]="[
+                  { value: 'true', label: 'Sí', inputId: 'guardianYes' },
+                  { value: 'false', label: 'No', inputId: 'guardianNo' }
+                ]"
+              ></app-shared-radio-group>
+            </div>            <!-- Campos del apoderado - Solo si hasGuardian es 'true' -->
+            @if (studentForm.get('hasGuardian')?.value === 'true') {
+              <div class="space-y-6">
+                <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <app-select-input
+                    controlName="guardianDocumentType"
+                    [form]="studentForm"
+                    [options]="documentTypes()"
+                    label="Tipo de documento"
+                    optionLabel="label"
+                    optionValue="code"
+                    placeholder="Selecciona"
+                  />
+                  <app-text-input 
+                    controlName="guardianDocumentNumber" 
+                    [form]="studentForm" 
+                    label="Número de documento" 
+                  />
+                </div> -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <app-text-input 
+                    controlName="guardianName" 
+                    [form]="studentForm" 
+                    label="Nombres" 
+                  />
+                  <app-text-input 
+                    controlName="guardianLastname" 
+                    [form]="studentForm" 
+                    label="Apellidos" 
+                  />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <app-text-input 
+                    controlName="guardianPhoneNumber" 
+                    [form]="studentForm"
+                    label="Teléfono" 
+                  />
+                  <app-text-input 
+                    controlName="guardianEmail" 
+                    [form]="studentForm" 
+                    label="Correo electrónico" 
+                  />
+                </div>
+              </div>
+            }
+          </section>
+
+          <!-- Discapacidad -->
+          <section>
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <i class="pi pi-heart text-purple-600"></i>Información de Discapacidad
+            </h3>
+            
+            <div class="mb-4">
+              <h4 class="text-sm font-medium mb-3">¿Tiene alguna discapacidad?</h4>
+              <app-shared-radio-group
+                [form]="studentForm"
+                controlName="hasDisability"
+                [options]="[
+                  { value: 'true', label: 'Sí', inputId: 'disabilityYes' },
+                  { value: 'false', label: 'No', inputId: 'disabilityNo' }
+                ]"
+              ></app-shared-radio-group>
+            </div>
+
+            <!-- Campos de discapacidad - Solo si hasDisability es 'true' -->
+            @if (studentForm.get('hasDisability')?.value === 'true') {
+              <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <app-select-input
+                    controlName="disabilityType"
+                    [form]="studentForm"
+                    [options]="disabilityTypes()"
+                    label="Tipo de discapacidad"
+                    optionLabel="label"
+                    optionValue="code"
+                    placeholder="Selecciona"
+                  />
+                  
+                  <!-- Campo de descripción - Solo si es "Otros" (código '12') -->
+                  @if (studentForm.get('disabilityType')?.value === '12') {
+                    <app-text-input 
+                      controlName="disabilityDescription" 
+                      [form]="studentForm" 
+                      label="Especifique la discapacidad" 
+                      placeholder="Describa la discapacidad"
+                    />
+                  }
+                </div>
+                
+                <!-- Si no es "Otros", mostrar el campo de descripción en toda la fila -->
+                @if (studentForm.get('disabilityType')?.value && studentForm.get('disabilityType')?.value !== '12') {
+                  <app-text-input 
+                    controlName="disabilityDescription" 
+                    [form]="studentForm" 
+                    label="Descripción adicional (opcional)" 
+                    placeholder="Información adicional sobre la discapacidad"
+                  />
+                }
+              </div>
+            }
+          </section>
+        </form>
+      }
+    </div>
+    <!-- Footer fijo -->
+    <div class="sticky bottom-0 left-0 w-full  border-t border-gray-200 dark:border-gray-700 z-10 px-4 md:px-8 py-4 flex justify-end gap-3">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        [size]="'large'"
+        (onClick)="onHide()"
+        [disabled]="saving()"
+      ></p-button>
+      <p-button
+        [label]="studentToEdit ? 'Actualizar' : 'Crear'"
+        icon="pi pi-check"
+        severity="success"
+        [size]="'large'"
+        (onClick)="onSave()"
+        [loading]="saving()"
+        [disabled]="studentForm.invalid || saving()"
+      ></p-button>
+    </div>
+  </div>
+  <p-toast position="top-right"></p-toast>
+</p-dialog>

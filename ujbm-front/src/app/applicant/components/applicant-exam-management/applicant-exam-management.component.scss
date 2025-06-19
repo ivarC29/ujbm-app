@@ -1,0 +1,61 @@
+/* Ajustes para p-select y p-dropdown */
+:host ::ng-deep .select-full-width {
+  width: 100% !important;
+  display: block !important;
+
+  .p-dropdown, .p-select {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+}
+
+/* Ajustes para p-datepicker */
+:host ::ng-deep .datepicker-full-width {
+  width: 100% !important;
+  display: block !important;
+
+  .p-calendar, .p-datepicker-calendar {
+    width: 100% !important;
+  }
+
+  .p-inputtext {
+    width: 100% !important;
+  }
+}
+
+/* Ajustes para los inputs number */
+:host ::ng-deep .p-inputnumber {
+  width: 100% !important;
+  
+  .p-inputtext {
+    width: 100% !important;
+  }
+}
+
+/* Ajustes para checkboxes */
+:host ::ng-deep .p-checkbox {
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* Ajustes generales */
+:host ::ng-deep {
+  .p-select, .p-datepicker, .p-inputnumber {
+    width: 100%;
+    
+    .p-inputtext, .p-dropdown, .p-calendar {
+      width: 100%;
+    }
+  }
+  
+  .p-checkbox {
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .p-fileupload-basic {
+    .p-button {
+      font-size: 0.875rem;
+    }
+  }
+}

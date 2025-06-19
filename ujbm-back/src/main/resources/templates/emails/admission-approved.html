@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admisión Aprobada</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background: #fff;
+            max-width: 500px;
+            margin: 40px auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #e0e0e0;
+            padding: 30px 40px;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px auto;
+            height: 60px;
+            max-width: 180px;
+        }
+        h1 {
+            color: #002D62;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #333;
+            font-size: 16px;
+        }
+        a {
+            color: #fff;
+            background: #002D62;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img class="logo" th:src="${logoUrl}" src="/img/logo_universidad.png" alt="Logo Universidad"/>
+    <h1>¡Felicitaciones, has aprobado!</h1>
+    <p>Hola <span th:text="${name}">Nombre</span>,</p>
+    <p>
+        ¡Te felicitamos por aprobar exitosamente tu proceso de admisión!<br>
+        Ya se ha generado el pago de tu matrícula. Por favor, realiza el pago correspondiente y luego sube el comprobante en el siguiente enlace:
+    </p>
+    <p>
+        <a th:href="${paymentLink}" th:text="${paymentLink}">Subir comprobante de matrícula</a>
+    </p>
+    <div class="footer">
+        Bienvenido a la Universidad Jaime Bausate y Meza.<br/>
+        ¡Éxitos en tu nueva etapa!
+    </div>
+</div>
+</body>
+</html>

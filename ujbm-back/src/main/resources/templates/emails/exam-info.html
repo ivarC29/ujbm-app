@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Información del Examen de Admisión</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { max-width: 150px; }
+        h1 { color: #003366; }
+        .highlight { background-color: #f7f7f7; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .important { color: #cc0000; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img class="logo" th:src="${logoUrl}" alt="Logo Bausate">
+        <h1>Información del Examen de Admisión</h1>
+    </div>
+
+    <p>Estimado(a) <strong th:text="${name}">Postulante</strong>,</p>
+
+    <p>Tu proceso para el examen de admisión ha sido validado correctamente. A continuación, te proporcionamos la información necesaria para tu examen de admisión al programa de <strong th:text="${programName}">Carrera</strong>.</p>
+
+    <div class="highlight">
+        <h3>Detalles del Examen</h3>
+        <ul>
+            <li><strong>Nombre del Examen:</strong> <span th:text="${examName}">Examen de Admisión</span></li>
+            <li><strong>Fecha:</strong> <span th:text="${examDate}">17 de Agosto de 2025</span></li>
+            <li><strong>Horario:</strong> <span th:text="${examTime}">9:00 AM - 12:00 PM</span></li>
+            <li><strong>Lugar:</strong> <span th:text="${examLocation}">Campus Principal</span></li>
+        </ul>
+    </div>
+
+    <h3>Materiales Requeridos</h3>
+    <p th:text="${requiredMaterials}">Documento de identidad, lápiz 2B, borrador y tajador</p>
+    <p class="important">No olvides llevar tu documento de identidad, sin él no podrás ingresar al examen.</p>
+    <!--
+    <h3>Temas a Evaluar</h3>
+    <p th:text="${examTopics}">Comprensión lectora, Razonamiento verbal, Razonamiento matemático y Conocimientos generales</p>
+    -->
+
+    <h3>Recomendaciones</h3>
+    <ul>
+        <li>Llega 30 minutos antes de la hora programada</li>
+        <li>Descansa adecuadamente la noche anterior</li>
+        <li>Revisa la ubicación del lugar con anticipación</li>
+        <li>Asegúrate de tener todos los materiales necesarios</li>
+    </ul>
+
+    <p>Si tienes alguna pregunta, contáctanos al correo admision@bausate.edu.pe.</p>
+
+    <p>¡Te deseamos mucho éxito!</p>
+
+    <p>Atentamente,<br>
+    Oficina de Admisiones<br>
+    Universidad Jaime Bausate y Meza</p>
+</body>
+</html>

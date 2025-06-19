@@ -1,0 +1,129 @@
+.settings-menu {
+  display: grid;
+  gap: 16px; 
+  margin-top: 20px;
+  padding: 0 12px;  
+  width: 100%;  
+  box-sizing: border-box;  
+  
+
+  grid-template-columns: 1fr;  
+  
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 16px; 
+    gap: 20px;
+  }
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 0 24px;  
+  }
+  
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.menu-item {
+  background-color: var(--surface-card, #fff);  
+  border-radius: 8px;
+  padding: 16px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 100%;  
+  overflow: hidden; 
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+   &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    
+    .title {
+      color: #9ca3af;
+    }
+    
+    .description {
+      color: #6b7280;
+    }
+    
+    .icon {
+      color: #9ca3af;
+    }
+  }
+  
+  .coming-soon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #fbbf24;
+    color: #92400e;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  
+  .icon {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: var(--primary-color, #3f51b5);
+  }
+  
+  .title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-color, #333);  
+    word-wrap: break-word; 
+  }
+  
+  .description {
+    font-size: 0.9rem;
+    color: var(--text-secondary-color, #666);  
+    word-wrap: break-word;  
+}
+
+:host-context(.dark) .menu-item,
+:host-context([data-theme="dark"]) .menu-item,
+.dark .menu-item,
+[data-theme="dark"] .menu-item {
+  background-color: var(--surface-card, #1e1e1e);  
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  
+  &:hover {
+    background-color: var(--surface-hover, #2a2a2a);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .title {
+    color: var(--text-color, #f1f1f1);
+  }
+  
+  .description {
+    color: var(--text-secondary-color, #bbb);
+  }
+}
+
+body.dark-mode .menu-item {
+  background-color: #1e1e1e;
+  
+  .title {
+    color: #f1f1f1;
+  }
+  
+  .description {
+    color: #bbb;
+  }
+}
+}

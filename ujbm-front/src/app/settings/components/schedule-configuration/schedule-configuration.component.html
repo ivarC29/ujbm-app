@@ -1,0 +1,33 @@
+<div class="card min-h-screen">
+  <page-title title="Configuración de Horarios"></page-title>
+  
+  <div class="schedule-container">
+    @for (day of days; track day) {
+      <div class="day-section">
+        <div class="day-header">{{ getDayDisplayName(day) }}</div>
+        
+        <div class="time-slots">
+          @for (config of getConfigsByDay(day); track config.id) {
+            <div class="time-slot">
+              <div class="time-info">
+                <div class="time-range">{{ config.startTime }} - {{ config.endTime }}</div>
+                @if (config.description) {
+                  <div class="slot-description">{{ config.description }}</div>
+                }
+              </div>
+              
+              <label class="availability-toggle">
+                <input type="checkbox" [checked]="config.isAvailable" (change)="toggleAvailability(config)">
+                <span class="slider"></span>
+              </label>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+  
+  <button class="back-button" (click)="goBack()">
+    <i class="pi pi-arrow-left"></i> Volver al menú
+  </button>
+</div>

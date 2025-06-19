@@ -1,0 +1,172 @@
+::ng-deep {
+
+  .p-datepicker-panel {
+    z-index: 9999 !important;
+  }
+  
+  .p-datepicker {
+    z-index: 9999 !important;
+  }
+  
+
+  .p-datatable-wrapper {
+    overflow: visible !important;
+  }
+  
+  .table-card {
+    overflow: visible !important;
+  }
+  
+
+  .p-calendar {
+    .p-datepicker-panel {
+      z-index: 10000 !important;
+      position: absolute !important;
+    }
+    
+    .p-inputtext {
+      width: 100% !important;
+      font-size: 0.875rem !important;
+      padding: 0.375rem 0.5rem !important;
+    }
+  }
+
+
+  .p-select {
+    max-width: 100% !important;
+    
+    .p-select-label {
+      max-width: 100% !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+      display: block !important;
+    }
+    
+    .p-select-panel {
+      max-width: 300px !important;
+      z-index: 9999 !important;
+    }
+  }
+  
+  // Ajustar el ancho de las columnas de la tabla
+  .p-datatable {
+    table-layout: fixed !important;
+    
+    th, td {
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+    }
+    
+    // Columna de programa más ancha pero con límite
+    th:nth-child(3), td:nth-child(3) {
+      max-width: 200px !important;
+      min-width: 150px !important;
+    }
+    
+    // Columna de estudiante con límite
+    th:nth-child(2), td:nth-child(2) {
+      max-width: 180px !important;
+      min-width: 120px !important;
+    }
+  }
+
+  .p-paginator {
+    background-color: transparent !important;
+    border: none !important;
+    
+    .p-paginator-pages .p-paginator-page.p-highlight {
+      background-color: var(--primary-color);
+      color: var(--primary-color-text);
+    }
+  }
+
+  
+  .dark {
+    .p-datatable .p-datatable-thead > tr > th {
+      background-color: rgba(30, 41, 59, 0.8);
+      color: #e2e8f0;
+    }
+    
+    .p-datatable .p-datatable-tbody > tr {
+      background-color: rgba(30, 41, 59, 0.5);
+      
+      &:hover {
+        background-color: rgba(30, 41, 59, 0.8);
+      }
+    }
+    
+    .p-select-panel {
+      background-color: #1e293b;
+      border-color: #475569;
+      z-index: 9999 !important;
+    }
+    
+    .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+      color: #e2e8f0;
+      
+      &:hover {
+        background-color: rgba(59, 130, 246, 0.2);
+      }
+    }
+    
+ 
+    .p-datepicker {
+      background-color: #1e293b !important;
+      border-color: #475569 !important;
+      color: #e2e8f0 !important;
+      
+      .p-datepicker-header {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+        color: #e2e8f0 !important;
+      }
+      
+      .p-datepicker-calendar {
+        td {
+          span {
+            color: #e2e8f0 !important;
+            
+            &:hover {
+              background-color: rgba(59, 130, 246, 0.2) !important;
+            }
+            
+            &.p-highlight {
+              background-color: #3b82f6 !important;
+              color: white !important;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  
+  .status-badge {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .p-dialog-content {
+    padding: 0 !important;
+  }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.enrollment-row {
+  animation: fadeIn 0.3s ease-out;
+  animation-fill-mode: both;
+}
+
+@for $i from 1 through 10 {
+  .enrollment-row:nth-child(#{$i}) {
+    animation-delay: #{($i * 0.05s)};
+  }
+}

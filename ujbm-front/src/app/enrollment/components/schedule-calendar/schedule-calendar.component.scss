@@ -1,0 +1,113 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.calendar-container {
+  padding: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  
+  // modo oscuro con clases 
+  :host-context(.app-dark) & {
+    background: #1e1e1e;
+    color: #f3f4f6;
+    border: 1px solid #333;
+  }
+}
+
+:host ::ng-deep {
+  
+  .fc {
+    font-size: 0.875rem;
+  }
+  
+  .fc-toolbar {
+    flex-wrap: wrap;
+  }
+  
+  .fc-timegrid-slot {
+    height: 2rem !important;
+  }
+
+  // ajuste de color para textos en modo oscuro
+  :host-context(.app-dark) & {
+    .fc table,
+    .fc .fc-scrollgrid,
+    .fc .fc-scrollgrid-section > td,
+    .fc .fc-scrollgrid-section-header,
+    .fc .fc-scrollgrid-section-header > th,
+    .fc .fc-col-header,
+    .fc .fc-col-header-cell,
+    .fc-theme-standard .fc-scrollgrid,
+    .fc-theme-standard .fc-scrollgrid-section-header th {
+      background-color: #1e1e1e !important; 
+    }
+    .fc .fc-day-today,
+    .fc .fc-timegrid-col.fc-day-today,
+    .fc .fc-col-header-cell.fc-day-today,
+    .fc .fc-daygrid-day.fc-day-today {
+      background-color: rgba(59, 130, 246, 0.25) !important; 
+    }
+    
+    .fc-theme-standard td,
+    .fc-theme-standard th,
+    .fc-theme-standard .fc-scrollgrid {
+      border-color: #333 !important;
+    }
+    
+    .fc-theme-standard .fc-scrollgrid {
+      border: 1px solid #333;
+    }
+    
+    .fc-col-header-cell {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .fc-timegrid-axis {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .fc-timegrid-slot-minor {
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .fc-button-primary {
+      background-color: #3d4451;
+      border-color: #4b5563;
+    }
+    
+    .fc-button-primary:hover {
+      background-color: #4b5563;
+      border-color: #6b7280;
+    }
+    
+    .fc-button-active {
+      background-color: #1f2937 !important;
+      border-color: #374151 !important;
+    }
+    
+  }
+  
+}
+
+@media (max-width: 600px) {
+  :host ::ng-deep .fc-toolbar-title {
+    font-size: 1rem;
+  }
+  
+  :host ::ng-deep .fc-header-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  :host ::ng-deep .fc-timegrid-slot {
+    height: 1.5rem !important;
+  }
+
+  :host ::ng-deep .fc-scrollgrid {
+    overflow-x: auto;
+  }
+}

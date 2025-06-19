@@ -1,0 +1,350 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+  <div>
+    <h1 class="text-2xl font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+      <i class="pi pi-th-large text-blue-600 dark:text-blue-400"></i>
+      Gestión de Secciones de Cursos
+    </h1>
+    <p class="text-gray-600 dark:text-gray-400 mt-1">Administre las secciones de cursos del sistema académico</p>
+  </div>
+  <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+    <p-button 
+      label="Nueva Sección" 
+      icon="pi pi-plus" 
+      severity="success"
+      [raised]="true"
+      (onClick)="onCreateSection()"
+      class="p-button-sm w-full sm:w-auto">
+    </p-button>
+    <p-button 
+      label="Carga Masiva" 
+      icon="pi pi-upload" 
+      severity="info"
+      [raised]="true"
+      (onClick)="onOpenUploadDialog()"
+      class="p-button-sm w-full sm:w-auto">
+    </p-button>
+  </div>
+</div>
+
+<div class="table-card dark:bg-gray-900 shadow-md rounded-lg overflow-x-auto">
+  <p-table
+    #dt
+    [value]="courseSections()" 
+    [loading]="loading()"
+    [rowHover]="true"
+    [showGridlines]="true"
+    [paginator]="false"
+    styles="min-width: 1200px; width: 100%;"
+    styleClass="p-datatable-striped p-datatable-gridlines p-datatable-sm w-full"
+    responsiveLayout="scroll"
+    [size]="'small'"
+    (onSort)="onSort($event)"
+    [sortMode]="'single'"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex flex-wrap sm:flex-nowrap justify-between items-center gap-3 w-full">
+        <div class="flex justify-content-start w-full sm:w-auto">
+          <button
+            pButton
+            label="Limpiar"
+            class="p-button-outlined w-full sm:w-auto"
+            icon="pi pi-filter-slash"
+            (click)="clear(dt)"
+          ></button>
+        </div>
+        <div class="flex justify-content-end w-full sm:w-auto">
+          <p-iconfield iconPosition="left" class="flex-grow-1 sm:ml-auto">
+            <p-inputicon>
+              <i class="pi pi-search"></i>
+            </p-inputicon>
+            <input
+              pInputText
+              type="text"
+              class="w-full"
+              (input)="onGlobalSearch($any($event.target).value)"
+              placeholder="Buscar sección por curso..."
+              #searchInput
+            />
+          </p-iconfield>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <!-- Fila 1: Headers y sorting -->
+      <tr>
+        <th pSortableColumn="courseName" style="min-width: 14rem">
+          <div class="flex justify-between items-center">
+            Curso
+            <p-sortIcon field="courseName"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="section" style="min-width: 8rem">
+          <div class="flex justify-between items-center">
+            Sección
+            <p-sortIcon field="section"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="teacherName" style="min-width: 12rem">
+          <div class="flex justify-between items-center">
+            Docente
+            <p-sortIcon field="teacherName"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="vacancies" style="min-width: 8rem">
+          <div class="flex justify-between items-center">
+            Vacantes
+            <p-sortIcon field="vacancies"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="periodName" style="min-width: 10rem">
+          <div class="flex justify-between items-center">
+            Período
+            <p-sortIcon field="periodName"></p-sortIcon>
+          </div>
+        </th>
+
+        <th style="min-width: 14rem">
+          <div>Horario</div>
+        </th>
+
+        <th style="min-width: 10rem">
+          <div>Acciones</div>
+        </th>
+      </tr>
+
+      <!-- Fila 2: Filtros separados -->
+      <tr>
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="text"
+            placeholder="Filtrar por curso..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('courseName', $any($event.target).value)"
+            (click)="$event.stopPropagation()"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="text"
+            placeholder="Filtrar sección..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('section', $any($event.target).value)"
+            (click)="$event.stopPropagation()"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="text"
+            placeholder="Filtrar por docente..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('teacherName', $any($event.target).value)"
+            (click)="$event.stopPropagation()"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="number"
+            placeholder="Filtrar vacantes..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('vacancies', $any($event.target).value)"
+            (click)="$event.stopPropagation()"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+          <p-select
+            [options]="periods()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Filtrar por período..."
+            class="w-full"
+            [showClear]="true"
+            (onChange)="onPeriodFilterChange($event)"
+            (click)="$event.stopPropagation()"
+            [style]="{'width': '100%', 'min-width': '140px'}"
+            styleClass="text-xs"
+            appendTo="body"
+          >
+            <ng-template let-option pTemplate="item">
+              <span class="block truncate" [title]="option.name">{{ option.name }}</span>
+            </ng-template>
+          </p-select>
+        </th>
+
+        <th style="padding: 8px;">
+          <!-- Horario no filtrable -->
+        </th>
+
+        <th style="padding: 8px;">
+          <!-- Acciones -->
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-section>
+      <tr class="section-row">
+        <td class="py-3 px-4">
+          <div class="flex items-center">
+            <span class="font-semibold text-gray-900 dark:text-gray-100">{{ section.courseName }}</span>
+          </div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+            {{ section.section }}
+          </span>
+        </td>
+        <td class="py-3 px-4">
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ section.teacherName }}
+          </span>
+        </td>
+        <td class="py-3 px-4 text-center">
+          <div class="px-3 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 inline-block font-semibold">
+            {{ section.vacancies }}
+          </div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ section.periodName }}
+          </span>
+        </td>
+        <td class="py-3 px-4">
+          <div class="schedule-container flex flex-wrap gap-x-3 gap-y-1">
+            @for (dayGroup of getGroupedSchedules(section.weeklyScheduleList); track dayGroup.day; let last = $last) {
+              <span class="inline-flex items-baseline whitespace-nowrap">
+                <span class="font-medium text-gray-700 dark:text-gray-300 text-sm">{{ dayGroup.day }}:</span>
+                <span class="ml-1 text-sm text-gray-600 dark:text-gray-400">{{ dayGroup.times }}</span>
+              </span>
+              @if (!last) {
+                <span class="text-gray-400 text-sm">•</span>
+              }
+            } @empty {
+              <span class="text-xs text-gray-500">Sin horario</span>
+            }
+          </div>
+        </td>
+        <td class="py-3 px-4 text-center">
+          <div class="flex gap-2 justify-center">
+            <button
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-sm p-button-info"
+              pTooltip="Editar"
+              (click)="onEditSection(section)"
+              type="button"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-sm p-button-danger"
+              pTooltip="Eliminar"
+              (click)="onDeleteSection(section)"
+              type="button"
+            ></button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="loadingbody">
+      @for (item of [1,2,3,4,5]; track item) {
+        <tr>
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2">
+              <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
+              <p-skeleton height="1.25rem" width="3rem"></p-skeleton>
+            </div>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="2rem" width="4rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.25rem" width="10rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="1.5rem" width="3rem" class="mx-auto"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.25rem" width="6rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.25rem" width="8rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="2rem" width="6rem" class="mx-auto"></p-skeleton>
+          </td>
+        </tr>
+      }
+    </ng-template>
+
+    <!-- Empty message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center py-8">
+          <div class="flex flex-col items-center gap-4">
+            <i class="pi pi-th-large text-5xl text-blue-400 dark:text-blue-500"></i>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 m-0 mb-2">
+                No hay secciones registradas
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm m-0 mb-3">
+                Comience creando su primera sección para gestionar el sistema académico.
+              </p>
+              <p-button 
+                label="Crear Primera Sección" 
+                icon="pi pi-plus" 
+                severity="success"
+                (onClick)="onCreateSection()">
+              </p-button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    
+  </p-table>
+</div>
+
+<!-- Form Dialog -->
+<app-course-section-form-dialog
+  [(visible)]="formDialogVisible"
+  [sectionId]="selectedSectionId"
+  (saved)="onSectionSaved()"
+></app-course-section-form-dialog>
+
+<!-- Upload Dialog -->
+<app-course-section-upload-dialog
+  [(visible)]="uploadDialogVisible"
+  (uploaded)="onBatchUploaded($event)"
+></app-course-section-upload-dialog>
+
+<!-- Paginador -->
+<div class="w-full">
+  <p-paginator
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [first]="first"
+    [showFirstLastIcon]="true"
+    [showPageLinks]="true"
+    [rowsPerPageOptions]="[5, 10, 16, 24, 32]"
+    (onPageChange)="onPageChange($event)"
+    class="mt-4 w-full"
+    styles="width: 100%;"
+  >
+  </p-paginator>
+</div>

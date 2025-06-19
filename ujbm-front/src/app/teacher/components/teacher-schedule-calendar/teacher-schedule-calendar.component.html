@@ -1,0 +1,78 @@
+<p-toast></p-toast>
+    
+    <div class="teacher-schedule-container">
+      <!-- Header -->
+      <div class="schedule-header">
+        <div class="header-content">
+          <div class="header-info">
+            <h1 class="schedule-title">Mi Horario Académico</h1>
+            <p class="schedule-subtitle">
+              Visualiza tu horario de clases para el período académico actual
+            </p>
+          </div>
+          <div class="header-actions">
+            <button 
+              pButton 
+              type="button"
+              label="Actualizar"
+              icon="pi pi-refresh"
+              class="p-button-outlined"
+              (click)="refreshCalendar()"
+              [loading]="loading"
+            ></button>
+           
+          </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="schedule-stats flex flex-wrap gap-4 mt-6 mb-8">
+          <div class="stat-item flex flex-col items-center justify-center px-6 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+            <span class="stat-number text-2xl font-bold text-indigo-700 dark:text-indigo-300">{{ courseSections.length }}</span>
+            <span class="stat-label text-xs text-gray-600 dark:text-gray-400 mt-1">Secciones</span>
+          </div>
+          <div class="stat-item flex flex-col items-center justify-center px-6 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+            <span class="stat-number text-2xl font-bold text-indigo-700 dark:text-indigo-300">{{ getTotalWeeklyHours() }}</span>
+            <span class="stat-label text-xs text-gray-600 dark:text-gray-400 mt-1">Horas Semanales</span>
+          </div>
+          <div class="stat-item flex flex-col items-center justify-center px-6 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+            <span class="stat-number text-2xl font-bold text-indigo-700 dark:text-indigo-300">{{ getUniqueDays().length }}</span>
+            <span class="stat-label text-xs text-gray-600 dark:text-gray-400 mt-1">Días de Clase</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      @if (loading) {
+        <div class="loading-container">
+          <p-progressSpinner></p-progressSpinner>
+          <p class="loading-text">Cargando horario...</p>
+        </div>
+      }
+
+      <!-- Calendar -->
+      @if (!loading) {
+        <div class="calendar-container">
+          <full-calendar [options]="calendarOptions"></full-calendar>
+        </div>
+      }
+
+      <!-- Course Legend -->
+      @if (!loading && courseSections.length > 0) {
+        <div class="course-legend mt-6">
+  <h3 class="legend-title text-base font-semibold mb-2 text-gray-700 dark:text-gray-200">Leyenda de Cursos</h3>
+  <div class="legend-grid flex flex-wrap gap-4">
+    @for (section of courseSections; track section.id) {
+      <div class="legend-item flex items-center gap-2">
+        <span 
+          class="legend-color w-5 h-5 rounded-full border-2 border-white shadow"
+          [style.background-color]="getCourseColor(section.id)"
+        ></span>
+        <span class="legend-code font-mono font-bold text-sm text-gray-800 dark:text-gray-100">{{ section.course.code }}</span>
+        <span class="legend-name text-xs text-gray-500 dark:text-gray-400">{{ section.course.name }}</span>
+        <span class="legend-section text-xs text-indigo-600 dark:text-indigo-300">({{ section.section }})</span>
+      </div>
+    }
+  </div>
+</div>
+      }
+    </div>

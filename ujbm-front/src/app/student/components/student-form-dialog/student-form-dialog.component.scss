@@ -1,0 +1,306 @@
+.student-dialog {
+  :host ::ng-deep .p-dialog {
+    .p-dialog-header {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      border: none;
+      padding: 1.25rem 1.5rem;
+      border-radius: 0.75rem 0.75rem 0 0;
+
+      .p-dialog-title {
+        font-weight: 600;
+        font-size: 1.125rem;
+        color: white;
+      }
+
+      .p-dialog-header-icon {
+        color: white;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+
+    .p-dialog-content {
+      padding: 0;
+      border: none;
+      background-color: #f9fafb;
+
+      .dark & {
+        background-color: #111827;
+      }
+    }
+
+    .p-dialog-footer {
+      padding: 0;
+      border: none;
+      background-color: white;
+
+      .dark & {
+        background-color: #1f2937;
+      }
+    }
+  }
+}
+
+.student-form-container {
+  background-color: white;
+  border-radius: 0 0 0.75rem 0.75rem;
+
+  .dark & {
+    background-color: #1f2937;
+  }
+
+  .p-inputtext,
+  .p-textarea {
+    border-radius: 0.5rem;
+    border: 2px solid #e5e7eb;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+
+    .dark & {
+      background-color: #374151;
+      border-color: #4b5563;
+      color: #f9fafb;
+    }
+
+    &:hover {
+      border-color: #2563eb;
+    }
+
+    &:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    &.ng-invalid.ng-touched {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+  }
+
+  .p-select {
+    .p-select-label {
+      border-radius: 0.5rem;
+      border: 2px solid #e5e7eb;
+      padding: 0.75rem;
+      font-size: 0.875rem;
+
+      .dark & {
+        background-color: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+      }
+    }
+
+    &:not(.p-disabled):hover .p-select-label {
+      border-color: #2563eb;
+    }
+
+    &.p-focus .p-select-label {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    &.ng-invalid.ng-touched .p-select-label {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+  }
+
+  .p-datepicker {
+    .p-datepicker-input-icon-container {
+      .p-datepicker-input {
+        border-radius: 0.5rem;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem;
+        font-size: 0.875rem;
+
+        .dark & {
+          background-color: #374151;
+          border-color: #4b5563;
+          color: #f9fafb;
+        }
+
+        &:hover {
+          border-color: #2563eb;
+        }
+
+        &:focus {
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        &.ng-invalid.ng-touched {
+          border-color: #dc2626;
+          box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+      }
+    }
+  }
+
+  .p-button {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+
+    &:not(.p-disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &.p-button-success {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      border: none;
+
+      &:hover {
+        background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+      }
+    }
+
+    &.p-button-secondary {
+      background-color: transparent;
+      color: #6b7280;
+      border: 2px solid #d1d5db;
+
+      .dark & {
+        color: #9ca3af;
+        border-color: #4b5563;
+      }
+
+      &:hover {
+        background-color: #f3f4f6;
+        border-color: #9ca3af;
+
+        .dark & {
+          background-color: #374151;
+          border-color: #6b7280;
+        }
+      }
+    }
+  }
+
+  .p-message {
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    &.p-message-error {
+      background-color: #fef2f2;
+      color: #dc2626;
+
+      .dark & {
+        background-color: #7f1d1d;
+        color: #fca5a5;
+      }
+
+      .p-message-icon {
+        color: #dc2626;
+
+        .dark & {
+          color: #fca5a5;
+        }
+      }
+    }
+  }
+
+  h3 {
+    color: #1f2937;
+
+    .dark & {
+      color: #f9fafb;
+    }
+  }
+
+  label {
+    color: #374151;
+
+    .dark & {
+      color: #d1d5db;
+    }
+  }
+
+  small.text-red-500 {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+
+    .dark & {
+      color: #fca5a5;
+    }
+  }
+}
+
+// Progress spinner
+.p-progressSpinner {
+  .p-progressSpinner-circle {
+    stroke: #2563eb;
+  }
+}
+
+// Select panel styling
+:host ::ng-deep .p-select-panel {
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+
+  .dark & {
+    background-color: #374151;
+    border-color: #4b5563;
+  }
+
+  .p-select-items {
+    .p-select-item {
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      margin: 0.125rem;
+
+      &:hover {
+        background-color: #f3f4f6;
+
+        .dark & {
+          background-color: #4b5563;
+        }
+      }
+
+      &.p-focus {
+        background-color: #2563eb;
+        color: white;
+      }
+    }
+  }
+
+  .p-select-filter-container {
+    padding: 0.75rem;
+
+    .p-inputtext {
+      border-radius: 0.375rem;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .student-dialog {
+    :host ::ng-deep .p-dialog {
+      width: 95vw !important;
+      max-width: 95vw !important;
+      margin: 1rem;
+
+      .p-dialog-content {
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+    }
+  }
+
+  .student-form-container {
+    padding: 1rem !important;
+
+    .grid {
+      grid-template-columns: 1fr !important;
+      gap: 1rem !important;
+    }
+  }
+}

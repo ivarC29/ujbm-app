@@ -1,0 +1,22 @@
+<div class="card min-h-screen">
+  <page-title title="Configuración"></page-title>
+  
+  <div class="settings-menu">
+    @for (item of menuItems; track item.id) {
+      <div 
+        class="menu-item" 
+        [class.disabled]="!item.enabled"
+        (click)="item.enabled ? navigateTo(item.route) : null"
+      >
+        <i class="icon" [ngClass]="item.icon"></i>
+        <div class="title">{{ item.title }}</div>
+        @if (item.description) {
+          <div class="description">{{ item.description }}</div>
+        }
+        @if (!item.enabled) {
+          <div class="coming-soon">Próximamente</div>
+        }
+      </div>
+    }
+  </div>
+</div>

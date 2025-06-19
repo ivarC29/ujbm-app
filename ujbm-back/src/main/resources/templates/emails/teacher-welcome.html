@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenido a Bausate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #0056b3;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo {
+            max-width: 150px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .credentials {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img th:src="${logoUrl}" alt="Logo" class="logo">
+</div>
+<div class="content">
+    <h2>¡Bienvenido, <span th:text="${name}"></span> <span th:text="${lastname}"></span>!</h2>
+    <p>Su usuario ha sido creado exitosamente como docente en Bausate.</p>
+    <div class="credentials">
+        <h3>Credenciales de acceso al sistema:</h3>
+        <p><strong>Usuario:</strong> <span th:text="${username}">usuario</span></p>
+        <p><strong>Contraseña:</strong> <span th:text="${password}">contraseña</span></p>
+    </div>
+    <p>Por favor, cambie su contraseña al ingresar por primera vez.</p>
+    <br>
+    <p>Atentamente,<br>Equipo de Bausate</p>
+</div>
+<div class="footer">
+    <p>Este es un correo automático, por favor no responder.</p>
+    <p>© Universidad Bausate - Todos los derechos reservados.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Entrevista</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 200px;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .details {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #edf2f7;
+            border-left: 4px solid #3498db;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img th:src="${logoUrl}" alt="Universidad Jaime Bausate y Meza">
+        <h2>Confirmación de Entrevista</h2>
+    </div>
+
+    <div class="content">
+        <p>Estimado(a) <span class="highlight" th:text="${name}">Postulante</span>,</p>
+
+        <p>Nos complace confirmar que tu entrevista para el proceso de admisión ha sido programada correctamente.</p>
+
+        <div class="details">
+            <p><strong>Fecha:</strong> <span th:text="${#temporals.format(startDateTime, 'dd/MM/yyyy')}">01/01/2023</span></p>
+            <p><strong>Hora:</strong> <span th:text="${#temporals.format(startDateTime, 'HH:mm')}">10:00</span> - <span th:text="${#temporals.format(endDateTime, 'HH:mm')}">11:00</span></p>
+            <p><strong>Entrevistador:</strong> <span th:text="${interviewerName}">Nombre del Entrevistador</span></p>
+            <p><strong>Enlace:</strong> <a th:href="${location}" th:text="${location}">Enlace de la entrevista</a></p>
+        </div>
+
+        <p>Recomendaciones para tu entrevista:</p>
+        <ul>
+            <li>Conéctate 5 minutos antes de la hora programada</li>
+            <li>Asegúrate de tener una conexión estable a internet</li>
+            <li>Busca un lugar tranquilo y bien iluminado</li>
+            <li>Ten a la mano tu documento de identidad</li>
+        </ul>
+
+        <p>Si necesitas reprogramar tu entrevista, por favor comunícate con nosotros lo antes posible.</p>
+
+        <p>¡Te deseamos mucho éxito en tu proceso de admisión!</p>
+    </div>
+
+    <div class="footer">
+        <p>Este es un correo automático, por favor no responder.</p>
+        <p>Universidad Jaime Bausate y Meza - Todos los derechos reservados.</p>
+    </div>
+</body>
+</html>

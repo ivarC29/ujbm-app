@@ -1,0 +1,567 @@
+<p-toast></p-toast>
+
+<div class="max-w-7xl mx-auto">
+  @if (!showExcelUpload()) {
+    <!-- Creación Manual -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+      <!-- Header -->
+      <div class="border-b border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+              {{ editMode ? 'Editar Examen de Admisión' : 'Crear Examen de Admisión' }}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">
+              {{ editMode ? 'Modifique las preguntas y programación del examen' : 'Configure las preguntas y programación del examen' }}
+            </p>
+          </div>
+          <div class="flex gap-3">
+            @if (!forceExcelMode && !editMode) {
+              <button
+                pButton
+                label="Usar Excel"
+                icon="pi pi-file-excel"
+                class="p-button-outlined p-button-info"
+                (click)="showExcelOption()"
+              ></button>
+            }
+            <button
+              pButton
+              label="Cancelar"
+              icon="pi pi-times"
+              class="p-button-outlined p-button-secondary"
+              (click)="onCancel()"
+            ></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <form [formGroup]="examForm" (ngSubmit)="onSubmit()">
+          <!-- Información Básica del Examen -->
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-8">
+            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+              <i class="pi pi-info-circle mr-3 text-blue-600"></i>
+              Información Básica
+            </h4>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Nombre del Examen *
+                </label>
+                <input
+                  pInputText
+                  formControlName="name"
+                  placeholder="Ej: Examen de Admisión 2024-I"
+                  class="w-full"
+                  [ngClass]="{'p-invalid': examForm.get('name')?.invalid && examForm.get('name')?.touched}"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Puntaje Máximo *
+                </label>
+                <p-inputNumber
+                  formControlName="maxScore"
+                  [min]="1"
+                  [max]="500"
+                  styleClass="w-full"
+                  [ngClass]="{'p-invalid': examForm.get('maxScore')?.invalid && examForm.get('maxScore')?.touched}"
+                  inputStyleClass="w-full"
+                ></p-inputNumber>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Puntaje Mínimo *
+                </label>
+                <p-inputNumber
+                  formControlName="passingScore"
+                  [min]="1"
+                  [max]="500"
+                  styleClass="w-full"
+                  [ngClass]="{'p-invalid': examForm.get('passingScore')?.invalid && examForm.get('passingScore')?.touched}"
+                  inputStyleClass="w-full"
+                ></p-inputNumber>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Descripción
+                </label>
+                <textarea
+                  pTextarea
+                  formControlName="description"
+                  placeholder="Descripción del examen..."
+                  rows="2"
+                  class="w-full"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Duración (minutos) *
+                </label>
+                <p-inputNumber
+                  formControlName="durationMinutes"
+                  [min]="1"
+                  [max]="480"
+                  styleClass="w-full"
+                  [ngClass]="{'p-invalid': examForm.get('durationMinutes')?.invalid && examForm.get('durationMinutes')?.touched}"
+                  inputStyleClass="w-full"
+                ></p-inputNumber>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Intentos Permitidos
+                </label>
+                <p-inputNumber
+                  formControlName="attemptsAllowed"
+                  [min]="1"
+                  [max]="5"
+                  styleClass="w-full"
+                  inputStyleClass="w-full"
+                ></p-inputNumber>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Programa Académico *
+                </label>
+                <p-select
+                  formControlName="programId"
+                  [options]="programs()"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Seleccione un programa"
+                  styleClass="w-full"
+                  [ngClass]="{'p-invalid': examForm.get('programId')?.invalid && examForm.get('programId')?.touched}"
+                ></p-select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Período Académico *
+                </label>
+                <p-select
+                  formControlName="academicPeriodId"
+                  [options]="academicPeriods()"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Seleccione un período"
+                  styleClass="w-full"
+                  [ngClass]="{'p-invalid': examForm.get('academicPeriodId')?.invalid && examForm.get('academicPeriodId')?.touched}"
+                ></p-select>
+              </div>
+              
+              <div class="lg:col-span-2 flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <p-checkbox
+                  formControlName="shuffleQuestions"
+                  [binary]="true"
+                  inputId="shuffle"
+                ></p-checkbox>
+                <label for="shuffle" class="text-sm font-medium text-blue-700 dark:text-blue-300 ml-2">
+                  <i class="pi pi-random mr-2"></i>
+                  Mezclar preguntas aleatoriamente
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-8">
+            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+              <i class="pi pi-calendar mr-3 text-green-600"></i>
+              Programación del Examen
+            </h4>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Fecha y Hora de Inicio *
+                </label>
+                <p-datePicker
+                  formControlName="startDateTime"
+                  [showTime]="true"
+                  dateFormat="dd/mm/yy"
+                  placeholder="Seleccione fecha y hora"
+                  styleClass="w-full"
+                  [ngClass]="{'p-invalid': examForm.get('startDateTime')?.invalid && examForm.get('startDateTime')?.touched}"
+                  [showIcon]="true"
+                ></p-datePicker>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Fecha y Hora de Fin *
+                </label>
+                <p-datePicker
+                  formControlName="endDateTime"
+                  [showTime]="true"
+                  dateFormat="dd/mm/yy"
+                  placeholder="Seleccione fecha y hora"
+                  styleClass="w-full"
+                  [ngClass]="{'p-invalid': examForm.get('endDateTime')?.invalid && examForm.get('endDateTime')?.touched}"
+                  [showIcon]="true"
+                ></p-datePicker>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Nombre de la Sesión
+                </label>
+                <input
+                  pInputText
+                  formControlName="scheduleName"
+                  placeholder="Ej: Sesión Mañana"
+                  class="w-full"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Ubicación
+                </label>
+                <input
+                  pInputText
+                  formControlName="location"
+                  placeholder="Ej: Aula Magna, Laboratorio 1"
+                  class="w-full"
+                />
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-8">
+          <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+            <h4 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+              <i class="pi pi-question-circle mr-3 text-purple-600"></i>
+              Preguntas del Examen ({{ questions().length }})
+            </h4>
+            <button
+              type="button"
+              pButton
+              label="Agregar Pregunta"
+              icon="pi pi-plus"
+              class="p-button-success p-button-sm"
+              (click)="addQuestion()"
+            ></button>
+          </div>
+
+          @if (questions().length > 1) {
+            <div class="mb-6 p-4 bg-white dark:bg-gray-700 rounded-lg border">
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                Navegar entre preguntas:
+              </label>
+              <div class="flex flex-wrap gap-2">
+                @for (question of questions(); track question.id; let i = $index) {
+                  <button
+                    type="button"
+                    pButton
+                    [label]="(i + 1).toString()"
+                    [class]="currentQuestionIndex() === i ? 'p-button-sm' : 'p-button-sm p-button-outlined'"
+                    (click)="goToQuestion(i)"
+                  ></button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Formulario de pregunta actual - CON SU PROPIO FORMULARIO -->
+          <div class="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h5 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">
+                  {{ currentQuestionIndex() + 1 }}
+                </span>
+                Pregunta {{ currentQuestionIndex() + 1 }}
+              </h5>
+              @if (questions().length > 1) {
+                <button
+                  type="button"
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-danger p-button-sm p-button-outlined"
+                  (click)="removeQuestion(currentQuestionIndex())"
+                  pTooltip="Eliminar pregunta"
+                ></button>
+              }
+            </div>
+
+            <!-- Formulario separado para la pregunta -->
+            <form [formGroup]="questionForm">
+              <!-- Configuración de la pregunta -->
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4 mb-6">
+                <div class="lg:col-span-2">
+                  <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Texto de la Pregunta *
+                  </label>
+                  <textarea
+                    pTextarea
+                    formControlName="questionText"
+                    placeholder="Escriba la pregunta aquí..."
+                    rows="4"
+                    class="w-full"
+                    (blur)="onQuestionTextChange()"
+                  ></textarea>
+                </div>
+
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Tipo de Pregunta *
+                    </label>
+                    <p-select
+                      formControlName="questionType"
+                      [options]="questionTypes"
+                      optionLabel="label"
+                      optionValue="value"
+                      (onChange)="onQuestionTypeChange()"
+                      styleClass="w-full"
+                    ></p-select>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Puntos *
+                    </label>
+                    <p-inputNumber
+                      formControlName="points"
+                      [min]="0.1"
+                      [max]="100"
+                      [minFractionDigits]="1"
+                      [maxFractionDigits]="2"
+                      styleClass="w-full"
+                      inputStyleClass="w-full"
+                      (onBlur)="onPointsChange()"
+                    ></p-inputNumber>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <!-- Archivo de pregunta -->
+            <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-600 rounded-lg">
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                <i class="pi pi-paperclip mr-2"></i>
+                Archivo de la Pregunta (Opcional)
+              </label>
+              <div class="flex items-center space-x-4">
+                @if (!getCurrentQuestion()?.questionFile) {
+                  <p-fileUpload
+                    mode="basic"
+                    chooseLabel="Seleccionar archivo"
+                    accept="image/*,application/pdf"
+                    [maxFileSize]="5000000"
+                    (onSelect)="onQuestionFileSelect($event)"
+                    styleClass="p-button-outlined"
+                    [customUpload]="true"
+                    [auto]="true"
+                    [showUploadButton]="false"
+                    [showCancelButton]="false"
+                    invalidFileSizeMessageSummary="Archivo demasiado grande"
+                    invalidFileSizeMessageDetail="El tamaño máximo permitido es 5MB"
+                  ></p-fileUpload>
+                  <span class="text-xs text-gray-500">
+                    PDF, JPG, PNG - Max 5MB
+                  </span>
+                } @else {
+                  <div class="flex items-center space-x-3 bg-green-50 dark:bg-green-900/20 p-2 rounded-lg">
+                    <i class="pi pi-file text-green-600"></i>
+                    <span class="text-sm text-green-600">
+                      {{ getCurrentQuestion()?.questionFile?.fileName }}
+                    </span>
+                    <button
+                      type="button"
+                      pButton
+                      icon="pi pi-times"
+                      class="p-button-rounded p-button-danger p-button-sm p-button-text"
+                      (click)="removeQuestionFile()"
+                      pTooltip="Eliminar archivo"
+                    ></button>
+                  </div>
+                }
+              </div>
+            </div>
+
+           
+            @if (shouldShowAnswers()) {
+              <div class="space-y-4">
+                <div class="flex flex-wrap justify-between items-center mb-2">
+                  <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <i class="pi pi-list mr-2"></i>
+                    Opciones de Respuesta *
+                  </label>
+                  @if (shouldShowAddAnswerButton()) {
+                    <button
+                      type="button"
+                      pButton
+                      label="Agregar Opción"
+                      icon="pi pi-plus"
+                      class="p-button-sm p-button-outlined p-button-info"
+                      (click)="addAnswer()"
+                    ></button>
+                  }
+                </div>
+
+                <div class="space-y-3">
+                  @for (answer of getCurrentAnswers(); track answer.id; let answerIndex = $index) {
+                    <div class="bg-gray-50 dark:bg-gray-600 rounded-lg p-4 border border-gray-200 dark:border-gray-500">
+                      <div class="flex items-start space-x-4">
+                        
+                        <div class="flex-shrink-0 mt-3">
+                          <div class="flex items-center min-h-[40px]">
+                            <p-checkbox
+                              [(ngModel)]="answer.isCorrect"
+                              [ngModelOptions]="{standalone: true}"
+                              [binary]="true"
+                              [inputId]="'correct-' + answer.id"
+                            ></p-checkbox>
+                            <label 
+                              [for]="'correct-' + answer.id"
+                              class="text-xs font-medium text-green-600 dark:text-green-400 ml-2"
+                            >
+                              Correcta
+                            </label>
+                          </div>
+                        </div>
+
+                        <!-- Contenido de la respuesta -->
+                        <div class="flex-grow space-y-3">
+                          <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                              Texto de la respuesta
+                            </label>
+                            <input
+                              pInputText
+                              [(ngModel)]="answer.answerText"
+                              [ngModelOptions]="{standalone: true}"
+                              placeholder="Escriba la opción de respuesta..."
+                              class="w-full"
+                            />
+                          </div>
+
+                          <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                              <i class="pi pi-paperclip mr-1"></i>
+                              Archivo (Opcional)
+                            </label>
+                            <div class="flex items-center space-x-2">
+                              @if (!answer.answerFile) {
+                                <p-fileUpload
+                                  mode="basic"
+                                  chooseLabel="Archivo"
+                                  accept="image/*,application/pdf"
+                                  [maxFileSize]="3000000"
+                                  (onSelect)="onAnswerFileSelect($event, answerIndex)"
+                                  styleClass="p-button-sm p-button-outlined"
+                                  [customUpload]="true"
+                                  [auto]="true"
+                                  [showUploadButton]="false"
+                                  [showCancelButton]="false"
+                                  invalidFileSizeMessageSummary="Archivo demasiado grande"
+                                  invalidFileSizeMessageDetail="El tamaño máximo permitido es 3MB"
+                                ></p-fileUpload>
+                                <span class="text-xs text-gray-500">Max 3MB</span>
+                              } @else {
+                                <div class="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 p-1 rounded-lg">
+                                  <i class="pi pi-file text-green-600 text-xs"></i>
+                                  <span class="text-xs text-green-600">
+                                    {{ answer.answerFile?.fileName }}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    pButton
+                                    icon="pi pi-times"
+                                    class="p-button-rounded p-button-danger p-button-sm p-button-text"
+                                    (click)="removeAnswerFile(answerIndex)"
+                                    pTooltip="Eliminar archivo"
+                                  ></button>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Botón eliminar -->
+                        @if (canRemoveAnswer(answerIndex)) {
+                          <div class="flex-shrink-0">
+                            <button
+                              type="button"
+                              pButton
+                              icon="pi pi-trash"
+                              class="p-button-danger p-button-sm p-button-outlined"
+                              (click)="removeAnswer(answerIndex)"
+                              pTooltip="Eliminar opción"
+                            ></button>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else {
+             
+              <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                <p class="text-blue-700 dark:text-blue-300 text-sm font-medium">
+                  @switch (questionForm.get('questionType')?.value) {
+                    @case (ESSAY) {
+                      <i class="pi pi-file-edit mr-2"></i>
+                      Este tipo de pregunta permite respuestas extensas de texto libre.
+                    }
+                    @case (FILE_UPLOAD) {
+                      <i class="pi pi-upload mr-2"></i>
+                      Los estudiantes podrán subir un archivo como respuesta.
+                    }
+                    @case (SHORT_ANSWER) {
+                      <i class="pi pi-pencil mr-2"></i>
+                      Este tipo de pregunta requiere una respuesta corta de texto.
+                    }
+                    @default {
+                      <i class="pi pi-info-circle mr-2"></i>
+                      Configure el tipo de pregunta para ver las opciones disponibles.
+                    }
+                  }
+                </p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <button
+            type="button"
+            pButton
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-outlined p-button-secondary"
+            (click)="onCancel()"
+          ></button>
+          
+          <button
+            type="button"
+            pButton
+            [label]="editMode ? 'Actualizar Examen' : 'Crear Examen'"
+            [icon]="editMode ? 'pi pi-save' : 'pi pi-check'"
+            [class]="editMode ? 'p-button-primary p-button-lg' : 'p-button-success p-button-lg'"
+            [loading]="loading()"
+            [disabled]="!isFormValid() || loading()"
+            (click)="onSubmit()"
+          ></button>
+        </div>
+      </div>
+    </div>
+  } @else {
+   
+    <app-excel-exam-upload
+      (examCreated)="examCreated.emit()"
+      (cancelled)="cancelled.emit()"
+      (switchToManual)="onSwitchToManual()"
+    ></app-excel-exam-upload>
+  }
+</div>

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: Sistema de gestion UJBM
+  config:
+    import: optional:file:.env[.properties]
+  profiles:
+    active: ${ENVIRONMENT}
+springdoc:
+  swagger-ui:
+    path: /ujbm-docs

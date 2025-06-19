@@ -1,0 +1,37 @@
+:host ::ng-deep {
+    .p-datatable {
+      .p-datatable-header {
+        background: var(--surface-0);
+      }
+      
+      .p-datatable-thead > tr > th {
+        background: var(--surface-0);
+      }
+    }
+  }
+  
+  .modalidad-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    
+    &.presencial {
+      background-color: #22c55e;
+      color: white;
+    }
+    
+    &.virtual {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    &.hibrido {
+      background-color: #f59e0b;
+      color: white;
+    }
+  }
+  
+  .whitespace-pre-line {
+    white-space: pre-line;
+  }

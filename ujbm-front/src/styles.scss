@@ -1,0 +1,121 @@
+/* You can add global styles to this file, and also import other style files */
+@use './tailwind.css';
+@use './assets/layout/layout.scss';
+@use 'primeicons/primeicons.css';
+@use './assets/demo/demo.scss';
+
+
+/* TOAST RESPONSIVE GLOBAL */
+.p-toast {
+  @media (max-width: 768px) {
+    position: fixed !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    left: 1rem !important;
+    width: auto !important;
+    max-width: none !important;
+    z-index: 9999 !important;
+  }
+  
+  @media (max-width: 480px) {
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+    left: 0.5rem !important;
+  }
+  
+  @media (max-width: 360px) {
+    top: 0.25rem !important;
+    right: 0.25rem !important;
+    left: 0.25rem !important;
+  }
+  
+  .p-toast-message {
+    @media (max-width: 768px) {
+      margin-bottom: 0.75rem !important;
+      border-radius: 0.5rem !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      animation: slideInDown 0.3s ease-out !important;
+    }
+    
+    @media (max-width: 480px) {
+      margin-bottom: 0.5rem !important;
+      padding: 0.75rem !important;
+      
+      .p-toast-message-content {
+        padding: 0 !important;
+        
+        .p-toast-summary {
+          font-size: 0.875rem !important;
+          font-weight: 600 !important;
+          margin-bottom: 0.25rem !important;
+        }
+        
+        .p-toast-detail {
+          font-size: 0.75rem !important;
+          line-height: 1.4 !important;
+          margin: 0 !important;
+        }
+      }
+      
+      .p-toast-icon-close {
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+        font-size: 0.75rem !important;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      margin-bottom: 0.375rem !important;
+      padding: 0.5rem !important;
+      
+      .p-toast-message-content {
+        .p-toast-summary {
+          font-size: 0.8rem !important;
+        }
+        
+        .p-toast-detail {
+          font-size: 0.7rem !important;
+        }
+      }
+      
+      .p-toast-icon-close {
+        width: 1.25rem !important;
+        height: 1.25rem !important;
+        font-size: 0.7rem !important;
+      }
+    }
+    
+    .p-toast-message-icon {
+      @media (max-width: 480px) {
+        font-size: 1.25rem !important;
+        margin-right: 0.5rem !important;
+      }
+      
+      @media (max-width: 360px) {
+        font-size: 1rem !important;
+        margin-right: 0.375rem !important;
+      }
+    }
+  }
+}
+
+/* Animación mejorada para móviles */
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Evitar que el toast interfiera con el scroll en móviles */
+@media (max-width: 768px) {
+  body {
+    &.p-overflow-hidden {
+      overflow: auto !important;
+    }
+  }
+}

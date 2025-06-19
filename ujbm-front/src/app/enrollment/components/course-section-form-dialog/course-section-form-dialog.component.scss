@@ -1,0 +1,461 @@
+:host ::ng-deep {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card: #ffffff;
+  --text-primary: #2c3e50;
+  --text-secondary: #495057;
+  --border-color: #e1e5e9;
+  --border-accent: #667eea;
+  --shadow-light: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.12);
+
+  .p-dialog {
+    @media (min-width: 768px) {
+      width: 1200px !important;
+      max-width: 95vw !important;
+    }
+    
+    .p-dialog-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-weight: 600;
+      font-size: 1.2rem;
+      border-radius: 12px 12px 0 0;
+      
+      .p-dialog-header-icon {
+        color: white;
+      }
+    }
+    
+    .p-dialog-content {
+      padding: 0;
+      border-radius: 0 0 12px 12px;
+    }
+  }
+
+
+  .dialog-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    min-height: 500px;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 1rem;
+    }
+  }
+
+  .left-column,
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+
+  .section-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-accent);
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 30%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--border-accent), transparent);
+    }
+  }
+
+
+  .filter-card,
+  .form-section,
+  .schedule-card,
+  .schedules-table {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: var(--shadow-medium);
+    }
+  }
+
+
+  .filter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    
+    @media (max-width: 576px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+
+  .field-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    
+    @media (max-width: 576px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .field-label {
+    display: block;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .form-input {
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    
+    &:focus,
+    &:focus-within {
+      border-color: var(--border-accent);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+  }
+
+  .autocomplete-field {
+    .p-autocomplete-input {
+      width: 100%;
+    }
+  }
+
+  .error-message {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  .add-schedule-prompt {
+    text-align: center;
+    padding: 2rem;
+    
+    .schedule-icon {
+      font-size: 3rem;
+      color: var(--border-accent);
+      margin-bottom: 1rem;
+    }
+    
+    .schedule-text {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+    
+    .schedule-btn {
+      padding: 0.75rem 2rem;
+    }
+  }
+
+  .schedule-form {
+    .day-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      
+      .day-chip {
+        padding: 0.5rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 20px;
+        background: var(--bg-secondary);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        font-size: 0.9rem;
+        
+        &:hover {
+          border-color: var(--border-accent);
+          transform: translateY(-2px);
+        }
+        
+        &.selected {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-color: #667eea;
+          color: white;
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+
+  .time-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .schedule-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+
+
+  .table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    th {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    td {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    tr:hover td {
+      background: var(--bg-secondary);
+    }
+    
+    .action-column {
+      width: 80px;
+      text-align: center;
+    }
+  }
+
+  .delete-btn {
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .empty-schedules {
+    text-align: center;
+    padding: 1rem;
+  }
+
+ 
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+  }
+
+ 
+  .p-button {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    
+    &.p-button-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+    }
+    
+    &.p-button-success {
+      background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+      border: none;
+    }
+    
+    &.p-button-danger {
+      &:hover:not(:disabled) {
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  // Configurar el DatePicker para que inicie en 00:00
+  .p-datepicker-time-picker {
+    .p-minute-picker {
+      // Asegurar que los minutos se muestren en incrementos de 15
+      button {
+        &:first-child {
+          // Botón para reducir minutos
+          &:disabled {
+            opacity: 0.3;
+          }
+        }
+      }
+    }
+  }
+  
+  // Mejorar la apariencia en dark mode
+  .p-datepicker {
+    .p-timepicker {
+      padding: 0.5rem;
+      
+      .p-separator {
+        color: var(--surface-600);
+      }
+      
+      .p-minute-picker,
+      .p-hour-picker {
+        button {
+          background: var(--surface-0);
+          border: 1px solid var(--surface-300);
+          color: var(--surface-700);
+          
+          &:hover {
+            background: var(--surface-100);
+            border-color: var(--primary-color);
+          }
+          
+          &:focus {
+            box-shadow: 0 0 0 0.2rem var(--primary-color-transparent);
+          }
+        }
+        
+        span {
+          color: var(--surface-700);
+          font-weight: 500;
+        }
+      }
+    }
+  }
+  
+  // Dark mode específico
+  .p-datepicker {
+    background: var(--surface-overlay);
+    border: 1px solid var(--surface-border);
+    
+    .p-timepicker {
+      .p-minute-picker,
+      .p-hour-picker {
+        button {
+          background: var(--surface-overlay);
+          border-color: var(--surface-border);
+          color: var(--text-color);
+          
+          &:hover {
+            background: var(--surface-hover);
+          }
+        }
+        
+        span {
+          color: var(--text-color);
+        }
+      }
+    }
+  }
+}
+
+
+:host-context(.dark-theme) ::ng-deep {
+  --bg-primary: #1a1d23;
+  --bg-secondary: #23272f;
+  --bg-card: #2c3e50;
+  --text-primary: #ecf0f1;
+  --text-secondary: #bdc3c7;
+  --border-color: #34495e;
+  --border-accent: #9b59b6;
+  --shadow-light: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+  .p-dialog-content {
+    background: var(--bg-primary) !important;
+  }
+
+  .filter-card,
+  .form-section,
+  .schedule-card,
+  .schedules-table {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+  }
+
+  .p-inputtext,
+  .p-inputnumber-input,
+  .p-dropdown,
+  .p-select,
+  .p-autocomplete,
+  .p-datepicker {
+    background: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+    
+    &:focus,
+    &:focus-within {
+      border-color: var(--border-accent) !important;
+      box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.2) !important;
+    }
+  }
+
+  .day-chip {
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+    
+    &:hover {
+      border-color: var(--border-accent) !important;
+    }
+    
+    &.selected {
+      background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
+      border-color: #9b59b6 !important;
+      color: white !important;
+    }
+  }
+
+  .custom-table {
+    th {
+      background: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+    }
+    
+    td {
+      color: var(--text-secondary) !important;
+    }
+    
+    tr:hover td {
+      background: var(--bg-secondary) !important;
+    }
+  }
+
+  .dialog-footer {
+    background: var(--bg-secondary) !important;
+    border-top-color: var(--border-color) !important;
+  }
+}

@@ -1,0 +1,151 @@
+<div class="calendar-container bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
+  <div class="calendar-header p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-red-600 to-blue-600 dark:from-red-700 dark:to-blue-700 rounded-t-2xl">
+    <div class="flex justify-between items-center">
+      <div class="calendar-title">
+        <h3 class="text-xl font-bold text-white flex items-center gap-2 drop-shadow-lg">
+          <i class="pi pi-calendar text-white drop-shadow-sm"></i>
+          Horario Semanal Completo
+        </h3>
+        <p class="text-sm text-white/95 mt-1 font-medium drop-shadow-sm">
+          Vista consolidada de todos tus cursos matriculados
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Course Legend -->
+  @if (courses && courses.length > 0) {
+    <div class="course-legend p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+      <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+        <i class="pi pi-bookmark text-blue-600"></i>
+        Leyenda de Cursos
+      </h4>
+      <div class="legend-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+        @for (course of courses; track course.courseSectionId) {
+          <div class="legend-item flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+            <div [class]="'legend-color w-4 h-4 rounded ' + getCourseColorClass(course.courseSectionId)"></div>
+            <div class="course-details">
+              <div class="course-code text-xs font-bold text-gray-800 dark:text-white">{{ course.courseCode }}</div>
+              <div class="course-name text-xs text-gray-600 dark:text-gray-300 truncate">{{ course.courseName }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+  
+  <div class="calendar-table p-2 sm:p-6">
+    <!-- Responsive: Tabs para días en móvil -->
+    <div class="block lg:hidden mb-4">
+      <div class="flex gap-2 overflow-x-auto pb-2">
+        @for (day of days; track day.value) {
+          <button type="button"
+            class="px-3 py-1 rounded-full text-sm font-semibold transition-colors"
+            [ngClass]="selectedDay === day.value ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'"
+            (click)="selectedDay = day.value">
+            {{ day.label }}
+          </button>
+        }
+      </div>
+    </div>
+    
+    <div class="calendar-grid">
+      <!-- Header Row -->
+      <div class="calendar-row header-row grid gap-1 mb-2"
+        [ngClass]="isMobile ? 'grid-cols-2' : 'grid-cols-8'">
+        <div class="calendar-cell time-header bg-gray-100 dark:bg-gray-700 p-2 rounded text-center font-semibold text-sm text-gray-800 dark:text-gray-200">
+          Hora
+        </div>
+        @if (!isMobile) {
+          @for (day of days; track day.value) {
+            <div class="calendar-cell day-header bg-blue-100 dark:bg-blue-900/30 p-2 rounded text-center font-semibold text-sm text-blue-700 dark:text-blue-300">
+              {{ day.label }}
+            </div>
+          }
+        } @else {
+          <div class="calendar-cell day-header bg-blue-100 dark:bg-blue-900/30 p-2 rounded text-center font-semibold text-sm text-blue-700 dark:text-blue-300">
+            {{ getDayLabel(selectedDay) }}
+          </div>
+        }
+      </div>
+      
+      <!-- Time Rows -->
+      @for (hour of hours; track hour) {
+        <div class="calendar-row grid gap-1 mb-1"
+          [ngClass]="isMobile ? 'grid-cols-2' : 'grid-cols-8'">
+          <div class="calendar-cell time-cell bg-gray-50 dark:bg-gray-700 p-2 rounded text-center text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ hour }}
+          </div>
+          @if (!isMobile) {
+            @for (day of days; track day.value) {
+              <div 
+                [class]="'calendar-cell schedule-cell p-2 rounded text-center text-xs transition-all cursor-pointer relative group ' + getCellClass(day.value, hour)"
+                (mouseenter)="showTooltip = getCourseTooltip(day.value, hour)"
+                (mouseleave)="showTooltip = ''">
+                <!-- Course Content -->
+                @if (getCourseAt(day.value, hour); as courseInfo) {
+                  <div class="course-info relative z-10">
+                    <div class="course-code font-bold text-white drop-shadow-sm">{{ courseInfo.code }}</div>
+                    <div class="course-time text-xs text-white/95 drop-shadow-sm">{{ courseInfo.timeRange }}</div>
+                  </div>
+                }
+                
+                <!-- Custom Tooltip -->
+                @if (showTooltip && getCourseTooltip(day.value, hour)) {
+                  <div class="custom-tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    <div class="tooltip-content bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg p-3 shadow-xl border border-gray-600 min-w-[200px]">
+                      <div class="tooltip-arrow absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                      @if (getCourseForTooltip(day.value, hour); as course) {
+                        <div class="font-semibold text-blue-300 mb-1">{{ course.courseCode }}</div>
+                        <div class="text-gray-200 mb-2 text-xs">{{ course.courseName }}</div>
+                        <div class="text-gray-300 text-xs mb-1">
+                          <i class="pi pi-clock mr-1"></i>
+                          {{ getTimeRangeForTooltip(day.value, hour) }}
+                        </div>
+                        <div class="text-gray-300 text-xs">
+                          <i class="pi pi-user mr-1"></i>
+                          {{ course.teacherName }}
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          } @else {
+            <div 
+              [class]="'calendar-cell schedule-cell p-2 rounded text-center text-xs transition-all cursor-pointer relative group ' + getCellClass(selectedDay, hour)"
+              (mouseenter)="showTooltip = getCourseTooltip(selectedDay, hour)"
+              (mouseleave)="showTooltip = ''">
+              @if (getCourseAt(selectedDay, hour); as courseInfo) {
+                <div class="course-info relative z-10">
+                  <div class="course-code font-bold text-white drop-shadow-sm">{{ courseInfo.code }}</div>
+                  <div class="course-time text-xs text-white/95 drop-shadow-sm">{{ courseInfo.timeRange }}</div>
+                </div>
+              }
+              @if (showTooltip && getCourseTooltip(selectedDay, hour)) {
+                <div class="custom-tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  <div class="tooltip-content bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg p-3 shadow-xl border border-gray-600 min-w-[200px]">
+                    <div class="tooltip-arrow absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                    @if (getCourseForTooltip(selectedDay, hour); as course) {
+                      <div class="font-semibold text-blue-300 mb-1">{{ course.courseCode }}</div>
+                      <div class="text-gray-200 mb-2 text-xs">{{ course.courseName }}</div>
+                      <div class="text-gray-300 text-xs mb-1">
+                        <i class="pi pi-clock mr-1"></i>
+                        {{ getTimeRangeForTooltip(selectedDay, hour) }}
+                      </div>
+                      <div class="text-gray-300 text-xs">
+                        <i class="pi pi-user mr-1"></i>
+                        {{ course.teacherName }}
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

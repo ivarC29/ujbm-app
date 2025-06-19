@@ -1,0 +1,42 @@
+<div class="card ">
+    <!-- <div class="min-h-screen flex flex-col py-8 px-6 w-full max-w-7xl shadow-lg rounded-lg> -->
+        <page-title
+            title="Inscripción de Cursos"
+            subtitle="Selecciona los cursos que deseas llevar este ciclo"
+            icon="fa-solid fa-book-open"
+        ></page-title>
+      <p class="text-gray-600 dark:text-gray-400 mb-3">
+        En caso de tener cursos reprobados, serán los que obligadamente llevarás.       </p>
+      <p class="text-gray-600 dark:text-gray-400 mb-3">
+        Elige tus cursos conforme al ciclo que vas para avanzar acorde a tu malla curricular.
+      </p>
+
+  <!-- Tabla de cursos disponibles -->
+      <app-course-list 
+      (courseSelected)="onCourseSelected($event)"
+      (courseRemoved)="onCourseRemoved($event)"
+      ></app-course-list>
+
+      <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mt-8">Cursos inscritos</h2>
+      <app-enrollment-table [enrolledCourses]="registeredCourses"></app-enrollment-table>  
+
+  <!-- btn para registrar matricula por ahora sin funcionalidad -->
+  <div class="flex justify-end mt-4">
+    <button
+      pButton
+      type="button"
+      label="Confirmar matrícula"
+      class="p-button-success"
+      [disabled]="registeredCourses.length < 5"
+      (click)="confirmEnrollment()"
+    ></button>
+  </div>
+  
+  @if (registeredCourses.length < 5) {
+    <p class="text-xs text-gray-500 mt-2">
+      Debes inscribir al menos 5 cursos para confirmar la matrícula.
+    </p>
+  }
+  <!-- Toast para mensajes -->
+  <app-toast-message></app-toast-message>
+</div>

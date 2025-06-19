@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Factura</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .invoice-details {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total {
+            text-align: right;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>FACTURA</h1>
+    <p th:text="'Fecha: ' + ${invoice.date}">Fecha: 01/01/2023</p>
+</div>
+
+<div class="invoice-details">
+    <p th:text="'Número de Factura: ' + ${invoice.number}">Número de Factura: INV-001</p>
+    <p th:text="'Cliente: ' + ${invoice.clientName}">Cliente: Nombre del Cliente</p>
+    <p th:text="'Dirección: ' + ${invoice.clientAddress}">Dirección: Dirección del Cliente</p>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Descripción</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario</th>
+        <th>Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${invoice.items}">
+        <td th:text="${item.description}">Producto</td>
+        <td th:text="${item.quantity}">1</td>
+        <td th:text="${#numbers.formatDecimal(item.unitPrice, 1, 2)} + ' €'">100.00 €</td>
+        <td th:text="${#numbers.formatDecimal(item.total, 1, 2)} + ' €'">100.00 €</td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="total">
+    <p th:text="'Subtotal: ' + ${#numbers.formatDecimal(invoice.subtotal, 1, 2)} + ' €'">Subtotal: 100.00 €</p>
+    <p th:text="'IVA (21%): ' + ${#numbers.formatDecimal(invoice.tax, 1, 2)} + ' €'">IVA (21%): 21.00 €</p>
+    <p th:text="'TOTAL: ' + ${#numbers.formatDecimal(invoice.total, 1, 2)} + ' €'">TOTAL: 121.00 €</p>
+</div>
+</body>
+</html>

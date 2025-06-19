@@ -1,0 +1,166 @@
+<div class="flex flex-col">
+    <!-- para alternar entre lista y cards -->
+    <div class="flex justify-end mb-4">
+      <button
+        class="p-button p-button-secondary p-button-sm"
+        (click)="toggleLayout()"
+      >
+        <i [class]="'pi ' + (layout === 'list' ? 'pi-th-large' : 'pi-list')"></i>
+        {{ layout === 'list' ? '' : '' }} <!-- Cambia tipo vista o tarjeta -->
+      </button>
+    </div>
+  
+  <!-- Vista de lista -->
+  @if (layout === 'list') {
+    <div class="flex flex-col gap-3">
+      @for (course of courses; track course.id) {
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:items-center p-3 sm:p-4 border rounded-lg shadow-sm ">
+          <div class="flex-1">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                {{ course.cycle }}° Ciclo
+              </span>
+              <h2 class="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-100">{{ course.name }}</h2>
+            </div>
+            <div class="flex flex-wrap gap-3 mt-2 text-sm">
+              <span class="inline-flex items-center text-gray-600 dark:text-gray-400">
+                <i class="pi pi-star-fill mr-1 text-yellow-500"></i> {{ course.credits }} créditos
+              </span>
+              <span class="inline-flex items-center text-gray-600 dark:text-gray-400">
+                <i class="pi pi-clock mr-1 text-green-500"></i> {{ course.weeklyHours }}h semanales
+              </span>
+            </div>
+          </div>
+          <div class="flex justify-end mt-3 sm:mt-0">
+            <button
+              pButton
+              type="button"
+              [label]="enrollmentService.isAlreadySelected(course.id) ? 'Quitar' : 'Inscribirse'"
+              [class]="enrollmentService.isAlreadySelected(course.id) ? 'p-button-danger' : 'p-button-primary'"
+              [icon]="enrollmentService.isAlreadySelected(course.id) ? 'pi pi-times' : 'pi pi-check'"
+              (click)="enrollmentService.isAlreadySelected(course.id) ? removeCourse(course.id) : openDialog(course)"
+            ></button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+  
+    <!-- Vista de tarjetas -->
+    @if (layout === 'grid') {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for ( course of courses; track course.id) {
+          <div class="border rounded-lg shadow  dark:border-gray-700 overflow-hidden flex flex-col">
+            <div class="bg-primary-50 dark:bg-primary-900/30 p-3 border-b border-primary-100 dark:border-primary-800">
+              <div class="flex items-start justify-between">
+                <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100 line-clamp-2">{{ course.name }}</h2>
+                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium  text-blue-800 dark:text-blue-200 whitespace-nowrap">
+                  {{ course.cycle }}° Ciclo
+                </span>
+              </div>
+            </div>
+            <div class="p-4 flex-1">
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <div class="flex flex-col items-center p-2  rounded">
+                  <span class="text-sm text-gray-500 dark:text-gray-400">Créditos</span>
+                  <span class="text-lg font-bold text-primary-600 dark:text-primary-400">{{ course.credits }}</span>
+                </div>
+                <div class="flex flex-col items-center p-2 rounded">
+                  <span class="text-sm text-gray-500 dark:text-gray-400">Horas</span>
+                  <span class="text-lg font-bold text-primary-600 dark:text-primary-400">{{ course.weeklyHours }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-3  border-t border-gray-200 dark:border-gray-700">
+              <button
+                pButton
+                type="button"
+                [label]="enrollmentService.isAlreadySelected(course.id) ? 'Quitar' : 'Inscribirse'"
+                [class]="enrollmentService.isAlreadySelected(course.id) ? 'p-button-danger w-full' : 'p-button-primary w-full'"
+                [icon]="enrollmentService.isAlreadySelected(course.id) ? 'pi pi-times' : 'pi pi-check'"
+                (click)="enrollmentService.isAlreadySelected(course.id) ? removeCourse(course.id) : openDialog(course)"
+              ></button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  
+    <!-- modal para los horarios -->
+    <app-dialog
+    [visible]="dialogVisible"
+    [header]="'Seleccionar horario'"
+    (onClose)="closeDialog()"
+  >
+    @if (selectedCourse) {
+      <div class="border-b pb-3 mb-4">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ selectedCourse.name }}</h2>
+        <div class="flex flex-wrap gap-2 mt-1">
+          <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+            {{ selectedCourse.cycle }}° Ciclo
+          </span>
+          <span class="inline-flex items-center text-sm text-gray-600 dark:text-gray-400">
+            <i class="pi pi-star-fill mr-1 text-yellow-500"></i> {{ selectedCourse.credits }} créditos
+          </span>
+          <span class="inline-flex items-center text-sm text-gray-600 dark:text-gray-400">
+            <i class="pi pi-clock mr-1 text-green-500"></i> {{ selectedCourse.weeklyHours }}h semanales
+          </span>
+        </div>
+      </div>
+      <div class="space-y-4">
+        @for (schedule of selectedCourse.schedules; track schedule.scheduleId) {
+          <div class="border dark:border-gray-700 rounded-lg overflow-hidden">
+            <div class="p-3 bg-gray-50 dark:bg-gray-800 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+              <div>
+                <p class="font-bold">{{ schedule.teacher.name }}</p>
+                <div class="flex gap-2 mt-1">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                    Sección {{ schedule.section }}
+                  </span>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
+                    {{ schedule.modality }}
+                  </span>
+                </div>
+              </div>
+              <button
+                pButton
+                type="button"
+                label="Seleccionar"
+                icon="pi pi-check"
+                class="p-button-sm"
+                [disabled]="enrollmentService.hasConflict(schedule, enrollmentService.getSelectedCourses())"
+                (click)="enrollInSchedule(schedule)"
+              ></button>
+            </div>
+            <div class="p-3 border-t dark:border-gray-700">
+              <h3 class="text-sm font-semibold mb-2">Horario:</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                @for (session of schedule.sessions; track session.id) {
+                  <div class="flex items-center gap-2 text-sm"
+                  [class.text-red-600]="hasSessionConflict(session, schedule)"
+                  [class.dark:text-red-400]="hasSessionConflict(session, schedule)">
+               <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex-shrink-0">
+                 {{ getDayAbbreviation(session.day) }}
+               </span>
+               <span>
+                 {{ session.startTime }} - {{ session.endTime }}
+                 @if (hasSessionConflict(session, schedule)) {
+                   <i class="pi pi-exclamation-triangle ml-1 text-red-500"></i>
+                 }
+               </span>
+             </div>
+                }
+              </div>
+              @if (enrollmentService.hasConflict(schedule, enrollmentService.getSelectedCourses())) {
+                <div class="mt-3 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-red-700 dark:text-red-300 text-sm">
+                  <i class="pi pi-exclamation-circle mr-1"></i>
+                  Este horario tiene conflictos con otros cursos seleccionados
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </app-dialog>
+</div>

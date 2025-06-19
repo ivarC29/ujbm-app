@@ -1,0 +1,327 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="flex justify-between items-center">
+  <div>
+    <h1 class="text-2xl font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+      <i class="pi pi-graduation-cap text-blue-600 dark:text-blue-400"></i>
+      Gestión de Estudiantes
+    </h1>
+    <p class="text-gray-600 dark:text-gray-400 mt-1">Administre los estudiantes del sistema académico</p>
+  </div>
+  <p-button 
+    label="Nuevo Estudiante" 
+    icon="pi pi-plus" 
+    severity="success"
+    [raised]="true"
+    (onClick)="onCreateStudent()"
+    class="p-button-sm">
+  </p-button>
+</div>
+
+<div class="table-card dark:bg-gray-900 shadow-md rounded-lg overflow-x-auto">
+  <p-table
+    #dt
+    [value]="students()" 
+    [loading]="loading()"
+    [rowHover]="true"
+    [showGridlines]="true"
+    [paginator]="false"
+    styles="min-width: 1200px; width: 100%;"
+    styleClass="p-datatable-striped p-datatable-gridlines p-datatable-sm w-full"
+    responsiveLayout="scroll"
+    [size]="'small'"
+    (onSort)="onSort($event)"
+    [sortMode]="'single'"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex flex-wrap sm:flex-nowrap justify-between items-center gap-3 w-full">
+        <div class="flex justify-content-start w-full sm:w-auto">
+          <button
+            pButton
+            label="Limpiar"
+            class="p-button-outlined w-full sm:w-auto"
+            icon="pi pi-filter-slash"
+            (click)="clear(dt)"
+          ></button>
+        </div>
+        <div class="flex justify-content-end w-full sm:w-auto">
+          <p-iconfield iconPosition="left" class="flex-grow-1 sm:ml-auto">
+            <p-inputicon>
+              <i class="pi pi-search"></i>
+            </p-inputicon>
+            <input
+              pInputText
+              type="text"
+              class="w-full"
+              (input)="onGlobalSearch($any($event.target).value)"
+              placeholder="Buscar estudiante por nombre..."
+              #searchInput
+            />
+          </p-iconfield>
+        </div>
+      </div>
+    </ng-template>
+    
+    <ng-template pTemplate="header">
+      <!-- Fila 1: Headers y sorting -->
+      <tr>
+        <th pSortableColumn="code" style="min-width: 8rem">
+          <div class="flex justify-between items-center">
+            Código
+            <p-sortIcon field="code"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="fullName" style="min-width: 15rem">
+          <div class="flex justify-between items-center">
+            Nombre Completo
+            <p-sortIcon field="fullName"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="email" style="min-width: 15rem">
+          <div class="flex justify-between items-center">
+            Email
+            <p-sortIcon field="email"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="enrollmentModeCode" style="min-width: 10rem">
+          <div class="flex justify-between items-center">
+            Modalidad
+            <p-sortIcon field="enrollmentModeCode"></p-sortIcon>
+          </div>
+        </th>
+        
+        <th pSortableColumn="programId" style="min-width: 12rem">
+          <div class="flex justify-between items-center">
+            Programa
+            <p-sortIcon field="programId"></p-sortIcon>
+          </div>
+        </th>
+
+        <th style="min-width: 10rem">
+          <div>Acciones</div>
+        </th>
+      </tr>
+
+      <!-- Fila 2: Filtros separados -->
+      <tr>
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="text"
+            placeholder="Filtrar código..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('code', $any($event.target).value)"
+            (click)="$event.stopPropagation()"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="text"
+            placeholder="Filtrar nombre..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('fullName', $any($event.target).value)"
+            (click)="$event.stopPropagation()"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+          <input
+            pInputText
+            type="text"
+            placeholder="Filtrar email..."
+            class="w-full p-inputtext-sm"
+            (input)="onColumnFilter('email', $any($event.target).value)"
+            (click)="$event.stopPropagation()"
+          />
+        </th>
+        
+        <th style="padding: 8px;">
+        <p-select
+          [options]="enrollmentModes()"
+          optionLabel="label"
+          optionValue="code"
+          placeholder="Filtrar modalidad..."
+          class="w-full"
+          [loading]="loadingEnrollmentModes()"
+          [showClear]="true"
+          (onChange)="onColumnFilter('enrollmentModeCode', $event.value)"
+          (click)="$event.stopPropagation()"
+          styleClass="text-xs"
+          appendTo="body"
+        >
+          <ng-template let-option pTemplate="item">
+            <span class="block truncate" [title]="option.label">{{ option.label }}</span>
+          </ng-template>
+        </p-select>
+      </th>
+        
+        <th style="padding: 8px;">
+          <p-select
+            [options]="programs()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Filtrar programa..."
+            class="w-full"
+            [loading]="loadingPrograms()"
+            [showClear]="true"
+            (onChange)="onProgramFilterChange($event)"
+            (click)="$event.stopPropagation()"
+            [style]="{'width': '100%', 'min-width': '150px'}"
+            styleClass="text-xs"
+            appendTo="body"
+          >
+            <ng-template let-option pTemplate="item">
+              <span class="block truncate" [title]="option.name">{{ option.name }}</span>
+            </ng-template>
+          </p-select>
+        </th>
+
+        <th style="padding: 8px;">
+          <!-- Acciones -->
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-student>
+      <tr class="student-row">
+        <td class="py-3 px-4">
+          <span class="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+            {{ student.code }}
+          </span>
+        </td>
+        <td class="py-3 px-4">
+          <div class="flex items-center">
+            <span class="font-semibold text-gray-900 dark:text-gray-100">{{ student.fullName }}</span>
+          </div>
+        </td>
+        <td class="py-3 px-4">
+          <div class="flex items-center">
+            <i class="pi pi-envelope mr-2 text-gray-500"></i>
+            <span class="text-sm">{{ student.email }}</span>
+          </div>
+        </td>
+        <td class="py-3 px-4">
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ student.enrollmentModeName }}
+          </span>
+        </td>
+        <td class="py-3 px-4">
+          <span
+            class="text-sm font-medium text-gray-700 dark:text-gray-300 block max-w-[180px] truncate"
+            [title]="getProgramName(student.programId)"
+          >
+            {{ getProgramName(student.programId) }}
+          </span>
+        </td>
+        <td class="py-3 px-4 text-center">
+          <div class="flex gap-2 justify-center">
+            <button
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-sm p-button-info"
+              pTooltip="Editar"
+              (click)="onEditStudent(student)"
+              type="button"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-sm p-button-danger"
+              pTooltip="Eliminar"
+              (click)="onDeleteStudent(student)"
+              type="button"
+            ></button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="loadingbody">
+      @for (item of [1,2,3,4,5]; track item) {
+        <tr>
+          <td class="py-3 px-4">
+            <p-skeleton height="2rem" width="6rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2">
+              <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
+              <p-skeleton height="1.25rem" width="3rem"></p-skeleton>
+            </div>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.25rem" width="12rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.25rem" width="8rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4">
+            <p-skeleton height="1.25rem" width="10rem"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="1.5rem" width="4rem" class="mx-auto"></p-skeleton>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <p-skeleton height="2rem" width="6rem" class="mx-auto"></p-skeleton>
+          </td>
+        </tr>
+      }
+    </ng-template>
+
+    <!-- Empty message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center py-8">
+          <div class="flex flex-col items-center gap-4">
+            <i class="pi pi-graduation-cap text-5xl text-blue-400 dark:text-blue-500"></i>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 m-0 mb-2">
+                No hay estudiantes registrados
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm m-0 mb-3">
+                Comience creando su primer estudiante para gestionar el sistema académico.
+              </p>
+              <p-button 
+                label="Crear Primer Estudiante" 
+                icon="pi pi-plus" 
+                severity="success"
+                (onClick)="onCreateStudent()">
+              </p-button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    
+  </p-table>
+</div>
+
+<!-- Form Dialog -->
+<app-student-form-dialog
+  [(visible)]="formDialogVisible"
+  [studentToEdit]="studentToEdit"
+  (studentCreated)="onStudentCreated()"
+  (studentUpdated)="onStudentUpdated()"
+  (visibleChange)="onDialogClose()"
+></app-student-form-dialog>
+
+<!-- Paginador -->
+<div class="w-full">
+  <p-paginator
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [first]="first"
+    [showFirstLastIcon]="true"
+    [showPageLinks]="true"
+    [rowsPerPageOptions]="[5, 10, 16, 24, 32]"
+    (onPageChange)="onPageChange($event)"
+    class="mt-4 w-full"
+    styles="width: 100%;"
+  >
+  </p-paginator>
+</div>

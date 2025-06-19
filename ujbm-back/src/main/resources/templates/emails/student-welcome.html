@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Bausate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #0056b3;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo {
+            max-width: 150px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .credentials {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img th:src="${logoUrl}" alt="Logo Bausate" class="logo">
+</div>
+<div class="content">
+    <h2>¡Bienvenido(a) a la Universidad Bausate!</h2>
+    <p>Estimado(a) <strong th:text="${name} + ' ' + ${lastname}">Estudiante</strong>,</p>
+    <p>Nos complace informarte que has sido matriculado exitosamente en el programa de <strong th:text="${programName}">Programa</strong>.</p>
+    <p>Tu código de estudiante es: <strong th:text="${studentCode}">S00001</strong></p>
+
+    <div class="credentials">
+        <h3>Credenciales de acceso al sistema:</h3>
+        <p><strong>Usuario:</strong> <span th:text="${username}">usuario</span></p>
+        <p><strong>Contraseña:</strong> <span th:text="${password}">contraseña</span></p>
+    </div>
+    <p>Por favor, cambie su contraseña al ingresar por primera vez.</p>
+
+    <p>Adjunto a este correo encontrarás tu constancia oficial de admisión. Por favor, guarda este documento para futuras referencias.</p>
+
+    <p>Te invitamos a acceder al sistema académico con tus credenciales para:</p>
+    <ul>
+        <li>Ver tu horario de clases</li>
+        <li>Revisar el material de los cursos</li>
+        <li>Comunicarte con tus profesores</li>
+        <li>Acceder a los recursos académicos</li>
+    </ul>
+
+    <p>Si tienes alguna pregunta, no dudes en contactar al departamento de Servicios Estudiantiles.</p>
+
+    <p>¡Te deseamos mucho éxito en tus estudios!</p>
+
+    <p>Atentamente,</p>
+    <p>Universidad Bausate<br>Departamento de Admisiones</p>
+</div>
+<div class="footer">
+    <p>Este es un correo automático, por favor no responder.</p>
+    <p>© Universidad Bausate - Todos los derechos reservados.</p>
+</div>
+</body>
+</html>

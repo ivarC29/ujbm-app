@@ -1,0 +1,214 @@
+<p-dialog
+  [header]="dialogTitle"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '800px', 'max-width': '90vw', 'max-height': '90vh' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [maximizable]="false"
+  styleClass="course-dialog"
+  [contentStyle]="{'overflow': 'visible', 'padding': '0', 'max-height': '70vh'}"
+  (onHide)="onHide()"
+>
+  <div class="course-form-container p-4 sm:p-6 overflow-y-auto max-h-[70vh]">
+    <!-- Loading spinner -->
+    @if (loading()) {
+      <div class="flex justify-center items-center py-8">
+        <p-progressSpinner strokeWidth="3" animationDuration="1s"></p-progressSpinner>
+      </div>
+    }
+
+    <!-- Formulario -->
+    @if (!loading()) {
+      <form [formGroup]="courseForm" class="space-y-6">
+        <!-- Error message -->
+        @if (errorMessage()) {
+          <p-message 
+            severity="error" 
+            [text]="errorMessage()"
+            styleClass="w-full mb-4">
+          </p-message>
+        }
+
+        <!-- Fila 1: Código y Programa -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+          <!-- Código -->
+          <div class="flex flex-col">
+            <label for="code" class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 lg:mb-3">
+              Código del Curso *
+            </label>
+            <input
+              id="code"
+              pInputText
+              formControlName="code"
+              placeholder="Ej: MAT101"
+              class="w-full px-3 py-2 lg:py-3 text-base lg:text-lg"
+              [class.ng-invalid]="isFieldInvalid('code')"
+            />
+            @if (isFieldInvalid('code')) {
+              <small class="text-red-500 mt-2">
+                {{ getFieldError('code') }}
+              </small>
+            }
+          </div>
+
+          <!-- Programa -->
+          <div class="flex flex-col">
+            <label for="programId" class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 lg:mb-3">
+              Programa Académico *
+            </label>
+            <p-select
+              id="programId"
+              formControlName="programId"
+              [options]="programs()"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Seleccionar programa..."
+              [loading]="loadingPrograms()"
+              class="w-full text-base lg:text-lg"
+              [class.ng-invalid]="isFieldInvalid('programId')"
+              appendTo="body"
+              [filter]="true"
+              filterPlaceholder="Buscar programa..."
+              [showClear]="true"
+              [panelStyle]="{'z-index': '10000', 'min-width': '350px', 'max-width': '500px'}"
+              [style]="{'min-height': '40px', 'padding': '0.25rem 0.75rem'}"
+            >
+              <ng-template let-option pTemplate="item">
+                <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" [title]="option.name">
+                  <div class="font-medium text-gray-900 dark:text-gray-100 truncate">
+                    {{ option.name }}
+                  </div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">
+                    ID: {{ option.id }}
+                  </div>
+                </div>
+              </ng-template>
+              <ng-template let-selected pTemplate="selectedItem">
+                <div class="flex items-center py-1" [title]="selected?.name">
+                  <span class="font-medium truncate">{{ selected?.name }}</span>
+                </div>
+              </ng-template>
+            </p-select>
+            @if (isFieldInvalid('programId')) {
+              <small class="text-red-500 mt-2">
+                {{ getFieldError('programId') }}
+              </small>
+            }
+          </div>
+        </div>
+
+        <!-- Fila 2: Nombre completo -->
+        <div class="flex flex-col">
+          <label for="name" class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 lg:mb-3">
+            Nombre del Curso *
+          </label>
+          <input
+            id="name"
+            pInputText
+            formControlName="name"
+            placeholder="Ej: Matemática Discreta"
+            class="w-full px-3 py-2 lg:py-3 text-base lg:text-lg"
+            [class.ng-invalid]="isFieldInvalid('name')"
+          />
+          @if (isFieldInvalid('name')) {
+            <small class="text-red-500 mt-2">
+              {{ getFieldError('name') }}
+            </small>
+          }
+        </div>
+
+        <!-- Fila 3: Créditos y Ciclo -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+          <!-- Créditos -->
+          <div class="flex flex-col">
+            <label for="credits" class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 lg:mb-3">
+              Créditos Académicos *
+            </label>
+            <p-select
+              id="credits"
+              formControlName="credits"
+              [options]="creditOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Seleccionar créditos..."
+              class="w-full text-base lg:text-lg"
+              [class.ng-invalid]="isFieldInvalid('credits')"
+              [style]="{'min-height': '40px', 'padding': '0.25rem 0.75rem'}"
+            >
+              <ng-template let-option pTemplate="item">
+                <div class="p-3 flex items-center">
+                  <span class="font-medium">{{ option.label }}</span>
+                  <span class="text-xs text-gray-500 ml-2">{{ option.value === 1 ? 'crédito' : 'créditos' }}</span>
+                </div>
+              </ng-template>
+            </p-select>
+            @if (isFieldInvalid('credits')) {
+              <small class="text-red-500 mt-2">
+                {{ getFieldError('credits') }}
+              </small>
+            }
+          </div>
+
+          <!-- Ciclo -->
+          <div class="flex flex-col">
+            <label for="cycle" class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 lg:mb-3">
+              Ciclo Académico *
+            </label>
+            <p-select
+              id="cycle"
+              formControlName="cycle"
+              [options]="cycleOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Seleccionar ciclo..."
+              class="w-full text-base lg:text-lg"
+              [class.ng-invalid]="isFieldInvalid('cycle')"
+              [style]="{'min-height': '40px', 'padding': '0.25rem 0.75rem'}"
+            >
+              <ng-template let-option pTemplate="item">
+                <div class="p-3 flex items-center justify-between">
+                  <span class="font-medium">{{ option.label }}</span>
+                  <span class="text-xs bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 px-2 py-1 rounded ml-4 lg:ml-6">
+                    {{ option.description }}
+                  </span>
+                </div>
+              </ng-template>
+            </p-select>
+            @if (isFieldInvalid('cycle')) {
+              <small class="text-red-500 mt-2">
+                {{ getFieldError('cycle') }}
+              </small>
+            }
+          </div>
+        </div>
+      </form>
+    }
+  </div>
+
+  <!-- Footer con botones -->
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        [size]="'large'"
+        (onClick)="onHide()"
+        [disabled]="saving()"
+      ></p-button>
+      <p-button
+        [label]="saveButtonLabel"
+        icon="pi pi-check"
+        severity="success"
+        [size]="'large'"
+        (onClick)="onSave()"
+        [loading]="saving()"
+        [disabled]="courseForm.invalid || saving()"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+<p-toast position="top-right" [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}"></p-toast>

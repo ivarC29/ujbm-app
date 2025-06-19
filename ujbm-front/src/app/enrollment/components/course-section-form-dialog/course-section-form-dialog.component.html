@@ -1,0 +1,345 @@
+<p-toast></p-toast>
+
+<p-dialog
+  [(visible)]="visible"
+  [header]="dialogTitle"
+  [modal]="true"
+  [style]="{ width: '1400px', maxWidth: '98vw' }"
+  [contentStyle]="{ overflow: 'visible', maxHeight: '90vh' }"
+  [baseZIndex]="10000"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="hideDialog()"
+>
+  <div class="max-h-[75vh] overflow-y-auto pr-2">
+    <form [formGroup]="form" class="grid grid-cols-1 xl:grid-cols-2 gap-6 p-2">
+      
+      <div class="space-y-6">
+        
+        <!-- Filtros de Curso -->
+        <div class="surface-card border-round-lg p-4 shadow-1">
+          <h6 class="text-lg font-semibold mb-4 text-surface-900 dark:text-surface-50">
+            <i class="pi pi-filter mr-2"></i>Filtros de Curso
+          </h6>
+          
+          <div [formGroup]="filtersForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">Programa</label>
+              <p-select
+                [options]="programs"
+                formControlName="programId"
+                placeholder="Seleccionar programa"
+                [showClear]="true"
+                class="w-full"
+                appendTo="body"
+              ></p-select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">Ciclo</label>
+              <p-select
+                [options]="cycles"
+                formControlName="cycle"
+                placeholder="Seleccionar ciclo"
+                [showClear]="true"
+                class="w-full"
+                appendTo="body"
+              ></p-select>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <h6 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
+            <i class="pi pi-book mr-2"></i>Información del Curso
+          </h6>
+          
+          <!-- Curso -->
+          <div>
+            <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">
+              Curso *
+            </label>
+            <p-select
+              [options]="courses"
+              optionLabel="name"
+              optionValue="id"
+              formControlName="courseId"
+              placeholder="Seleccionar curso"
+              [filter]="true"
+              [showClear]="true"
+              class="w-full"
+              appendTo="body"
+            ></p-select>
+            <small *ngIf="isInvalid('courseId')" class="text-red-500">
+              {{ getErrorMessage('courseId') }}
+            </small>
+          </div>
+
+          <!-- Sección y Vacantes -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">
+                Sección *
+              </label>
+              <input 
+                pInputText 
+                formControlName="section" 
+                placeholder="Ej: A, B, C" 
+                class="w-full"
+              />
+              <small *ngIf="isInvalid('section')" class="text-red-500">
+                {{ getErrorMessage('section') }}
+              </small>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">
+                Vacantes *
+              </label>
+              <p-inputNumber
+                formControlName="vacancies"
+                [min]="1"
+                [max]="200"
+                [showButtons]="true"
+                placeholder="Número de vacantes"
+                class="w-full"
+              ></p-inputNumber>
+              <small *ngIf="isInvalid('vacancies')" class="text-red-500">
+                {{ getErrorMessage('vacancies') }}
+              </small>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">
+              Docente *
+            </label>
+            <p-autoComplete
+               formControlName="teacherSelection"
+              [suggestions]="filteredTeachers"
+              (completeMethod)="searchTeachers($event)"
+              (onSelect)="onTeacherSelect($event)"
+              (onClear)="onTeacherClear()"
+              field="fullName"
+              [dropdown]="true"
+              placeholder="Buscar docente por nombre..."
+              [showClear]="true"
+              [minLength]="1"
+              class="w-full"
+              appendTo="body"
+              [emptyMessage]="'Escriba para buscar docentes...'"
+
+            >
+              <ng-template let-teacher pTemplate="item">
+                <div class="flex align-items-center p-2 hover:surface-hover">
+                  <div class="flex-1">
+                    <div class="font-medium text-surface-900 dark:text-surface-50">{{ teacher.fullName }}</div>
+                    <div class="text-xs text-surface-500">ID: {{ teacher.id }}</div>
+                  </div>
+                </div>
+              </ng-template>
+              <ng-template pTemplate="empty">
+                <div class="p-3 text-center text-surface-500">
+                  <i class="pi pi-search mr-2"></i>
+                  Escriba para buscar docentes...
+                </div>
+              </ng-template>
+            </p-autoComplete>
+            <small *ngIf="isInvalid('teacherId')" class="text-red-500">
+              {{ getErrorMessage('teacherId') }}
+            </small>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">
+              Período Académico *
+            </label>
+            <p-select
+              [options]="periods"
+              optionLabel="name"
+              optionValue="id"
+              formControlName="academicPeriodId"
+              placeholder="Seleccionar período"
+              [filter]="true"
+              [showClear]="true"
+              class="w-full"
+              appendTo="body"
+            ></p-select>
+            <small *ngIf="isInvalid('academicPeriodId')" class="text-red-500">
+              {{ getErrorMessage('academicPeriodId') }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <h6 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
+          <i class="pi pi-clock mr-2"></i>Horarios Semanales
+        </h6>
+
+        <!-- Agregar nuevo horario -->
+        <div class="surface-card border-round-lg p-4 shadow-1">
+          @if (!isAddingSchedule) {
+            <div class="text-center py-6">
+              <i class="pi pi-clock text-4xl text-primary mb-3"></i>
+              <p class="text-surface-600 dark:text-surface-300 mb-4">Agregar horarios para esta sección</p>
+              <button
+                pButton
+                type="button"
+                label="Agregar Horario"
+                icon="pi pi-plus"
+                (click)="startAddingSchedule()"
+                class="p-button-primary"
+              ></button>
+            </div>
+          } @else {
+            <div formGroupName="newSchedule" class="space-y-4">
+              <!-- Días de la semana -->
+              <div>
+                <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">Día *</label>
+                <div class="flex flex-wrap gap-2">
+                  @for (day of availableDays; track day) {
+                    <button
+                      type="button"
+                      class="w-10 h-10 flex items-center justify-center rounded-full border transition-all duration-150
+                        text-sm font-medium
+                        border-gray-300 dark:border-gray-600
+                        hover:bg-primary hover:text-white hover:border-primary
+                        focus:outline-none focus:ring-2 focus:ring-primary
+                        "
+                      [ngClass]="form.get('newSchedule.day')?.value === day 
+                        ? 'bg-primary text-white border-primary shadow'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200'"
+                      (click)="selectDay(day)"
+                    >
+                      {{ getDayAbbreviation(day) }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Horas -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">Hora inicio *</label>
+                  <p-datepicker
+                    formControlName="startTime"
+                    [timeOnly]="true"
+                    [hourFormat]="'24'"
+                    [stepMinute]="15"
+                    placeholder="00:00"
+                    class="w-full"
+                    appendTo="body"
+                    [showTime]="true"
+                    [showIcon]="false"
+                    dateFormat="HH:mm"
+                    [touchUI]="false"
+                    [inline]="false"
+                  ></p-datepicker>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium mb-2 text-surface-600 dark:text-surface-300">Hora fin *</label>
+                  <p-datepicker
+                    formControlName="endTime"
+                    [timeOnly]="true"
+                    [hourFormat]="'24'"
+                    [stepMinute]="15"
+                    placeholder="00:00"
+                    class="w-full"
+                    appendTo="body"
+                    [showTime]="true"
+                    [showIcon]="false"
+                    dateFormat="HH:mm"
+                    [touchUI]="false"
+                    [inline]="false"
+                  ></p-datepicker>
+                </div>
+              </div>
+
+              <!-- Botones -->
+              <div class="flex gap-2 justify-end">
+                <button
+                  pButton
+                  type="button"
+                  label="Agregar"
+                  icon="pi pi-check"
+                  (click)="addSchedule()"
+                  class="p-button-success p-button-sm"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  label="Cancelar"
+                  icon="pi pi-times"
+                  (click)="cancelAddingSchedule()"
+                  class="p-button-secondary p-button-sm"
+                ></button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Lista de horarios -->
+        @if (weeklySchedules.length > 0) {
+          <div class="surface-card border-round-lg shadow-1 surface-border border-1">
+            <div class="p-4 surface-border border-bottom-1">
+              <h6 class="font-semibold text-surface-900 dark:text-surface-50">Horarios Programados</h6>
+            </div>
+            <div class="p-4 max-h-60 overflow-y-auto">
+              <div class="space-y-2">
+                @for (schedule of weeklySchedules; track $index; let i = $index) {
+                  <div class="flex items-center justify-between p-3 surface-100 dark:surface-700 border-round">
+                    <div class="flex-1">
+                      <span class="font-medium text-surface-900 dark:text-surface-50">
+                        {{ getDayLabel(schedule.day) }}
+                      </span>
+                      <span class="ml-3 text-surface-600 dark:text-surface-300">
+                        {{ schedule.startTime }} - {{ schedule.endTime }}
+                      </span>
+                    </div>
+                    <button 
+                      pButton 
+                      type="button" 
+                      icon="pi pi-trash" 
+                      class="p-button-danger p-button-sm p-button-text"
+                      (click)="removeSchedule(i)"
+                      pTooltip="Eliminar horario"
+                    ></button>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+        
+        @if (weeklySchedules.length === 0) {
+          <div class="text-center p-4 text-red-500">
+            <small>* Debe agregar al menos un horario</small>
+          </div>
+        }
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 pt-4 surface-border border-top-1">
+      <button
+        pButton
+        label="Cancelar"
+        icon="pi pi-times"
+        class="p-button-secondary"
+        (click)="hideDialog()"
+        [disabled]="loading"
+      ></button>
+      <button
+        pButton
+        [label]="isEditMode ? 'Actualizar' : 'Crear'"
+        icon="pi pi-check"
+        class="p-button-primary"
+        (click)="saveSection()"
+        [loading]="loading"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
